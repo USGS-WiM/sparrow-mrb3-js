@@ -12,19 +12,26 @@ function populateMetricOptions(selectedIndex){
         switch (selectedIndex){
             case 0:
                 if( $("#st-select")[0].selectedIndex > 0){
+                    metricOptions = Catchments_st;
+                }else{
+                    metricOptions = Catchments;
+                }
+                break;
+            case 1:
+                if( $("#st-select")[0].selectedIndex > 0){
                     metricOptions = Group3_st;
                 }else{
                     metricOptions = Group3;
                 }
                 break;
-            case 1:
+            case 2:
                 if( $("#st-select")[0].selectedIndex > 0){
                     metricOptions = Group2_st;
                 }else{
                     metricOptions = Group2;
                 }
                 break;
-            case 2: 
+            case 3: 
                 if( $("#st-select")[0].selectedIndex > 0){
                     metricOptions = Group1_st;
                 }else{
@@ -32,7 +39,7 @@ function populateMetricOptions(selectedIndex){
                 }
                 break;
                 
-            case 3:
+            case 4:
                 metricOptions = ST;
                 break;
         }
@@ -40,19 +47,26 @@ function populateMetricOptions(selectedIndex){
         switch (selectedIndex){
             case 0:
                 if( $("#st-select")[0].selectedIndex > 0){
+                    metricOptions = Catchments_st_tn;
+                }else{
+                    metricOptions = Catchments_tn;
+                }
+                break;
+            case 1:
+                if( $("#st-select")[0].selectedIndex > 0){
                     metricOptions = Group3_st_tn;
                 }else{
                     metricOptions = Group3_tn;
                 }
                 break;
-            case 1:
+            case 2:
                 if( $("#st-select")[0].selectedIndex > 0){
                     metricOptions = Group2_st_tn;
                 }else{
                     metricOptions = Group2_tn;
                 }
                 break;
-            case 2: 
+            case 3: 
                 if( $("#st-select")[0].selectedIndex > 0){
                     metricOptions = Group1_st_tn;
                 }else{
@@ -60,7 +74,7 @@ function populateMetricOptions(selectedIndex){
                 }
                 break;
                 
-            case 3:
+            case 4:
                 metricOptions = ST_tn;
                 break;
         }
@@ -230,17 +244,17 @@ function setLayerDefs(){
         }
         if (layerDefObj.AOI1){
             if(definitionString != ""){
-                definitionString += " AND GRP_1_NAM = "+ "'" + layerDefObj.AOI1 + "'";
+                definitionString += " AND GP1 = "+ "'" + layerDefObj.AOI1 + "'";
             }else{
-                definitionString += "GRP_1_NAM = "+ "'" + layerDefObj.AOI1 + "'";
+                definitionString += "GP1 = "+ "'" + layerDefObj.AOI1 + "'";
             }
             
         }
         if (layerDefObj.AOI2){
             if(definitionString != ""){
-               definitionString += " AND GRP_2_NAM = "+ "'" + layerDefObj.AOI2 + "'";
+               definitionString += " AND GP2 = "+ "'" + layerDefObj.AOI2 + "'";
             }else{
-                definitionString += "GRP_2_NAM = "+ "'" + layerDefObj.AOI2 + "'";
+                definitionString += "GP2 = "+ "'" + layerDefObj.AOI2 + "'";
             }
         }
         
@@ -287,7 +301,7 @@ function updateAOI(layerDefs, selectId){
         domClass,
         on
     ) {
-        //var layerDefs = "GRP_1_NAM in ('Cumberland River')"
+        //var layerDefs = "GP1 in ('Cumberland River')"
         console.log('in updateAOI()');
         console.log('layerDefs = ' + layerDefs);
         console.log('selectId = ' + selectId);
@@ -324,27 +338,27 @@ function updateAOI(layerDefs, selectId){
             $.each(response, function(index, feature){
                 //console.log(feature);
                 /*if (feature.layerId == 1){
-                    console.log("Huc8 = " + feature.feature.attributes.GRP_2_NAM);
+                    console.log("Huc8 = " + feature.feature.attributes.GP2);
                 } 
                 if(feature.layerId == 6){
                     console.log("State = " + feature.feature.attributes.ST)
                 }*/
                 switch(feature.layerId){
                     case 1:
-                        var item = feature.feature.attributes.GRP_2_NAM;
+                        var item = feature.feature.attributes.GP2;
                         console.log("huc8 " + item);
                         $("#grp2-select").append('<option value="item">'+ item + '</option>').val(item);
                         break;
                     case 2:
-                        var item = feature.feature.attributes.GRP_1_NAM;
+                        var item = feature.feature.attributes.GP1;
                         console.log("independent watershed "+ item);
                         break;
                     case 5:
-                        var item = feature.feature.attributes.GRP_1_NAM;
+                        var item = feature.feature.attributes.GP1;
                          console.log("IND watershed " + item);
                         break;
                     case 6:
-                        var item = feature.feature.attributes.GRP_2_NAM;
+                        var item = feature.feature.attributes.GP2;
                         console.log("Huc8 " + item);
                         break;
                 }
@@ -358,8 +372,8 @@ function getTableFields(headerKeysArr, sparrowLayerId){
     var label = "";
     /*tableOutFields = [];
     var tableOutFields = [
-        { field: "GRP_1_NAM", name: "Independent Watershed name (in which HUC10 is nested)"},
-        { field: "GRP_2_NAM", name: "HUC8 (in which HUC10 is nested)"},
+        { field: "GP1", name: "Independent Watershed name (in which HUC10 is nested)"},
+        { field: "GP2", name: "HUC8 (in which HUC10 is nested)"},
         { field: "Area_g3", name: "HUC10 area (mi2)"}   
     ]*/
 
@@ -373,28 +387,28 @@ function getTableFields(headerKeysArr, sparrowLayerId){
     var configArr = [];
     var removeField = "";
     switch(sparrowLayerId){
-        case 0:
+        case 1:
             configArr = Group3;
-            removeField = "GRP_3_NAM";
+            removeField = "GP3";
             $.each(tableOutFields, function(i,object){
                 flatArr.push(object);
             });
             break;
-        case 4:
+        case 5:
             configArr = Group3_st;
             removeField = "ST_GP3_NAM";
             $.each(stateTableOutFields, function(i,object){
                 flatArr.push(object);
             });
             break;
-        case 7:
+        case 9:
             configArr = Group3_tn;
-             removeField = "GRP_3_NAM"
+             removeField = "GP3"
              $.each(tableOutFields, function(i,object){
                 flatArr.push(object);
             });
             break;
-        case 11:
+        case 13:
             configArr = Group3_st_tn;
             removeField = "ST_GP3_NAM";
             $.each(stateTableOutFields, function(i,object){
@@ -436,7 +450,7 @@ function getLegendLabels(sparrowLayerId){
     switch(sparrowLayerId){
         /////BEGIN PHOSPHORUS LAYERS___________________________________________________________
         case 0: 
-            //HUC10
+            //PHOS CATCHMENTS
             $.each(Group3, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      label = item.name;
@@ -444,8 +458,17 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 1:
+        case 1: 
             //HUC8
+            $.each(Group3, function(index, item){
+                if( $("#displayedMetricSelect").val() == item.field ) {
+                     label = item.name;
+                }
+            });
+            return label;
+            break;
+        case 2:
+            //Tributary
             $.each(Group2, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      label = item.name;
@@ -453,8 +476,8 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 2: 
-            //Independent Watershed
+        case 3: 
+            //Main River Basin
              $.each(Group1, function(index, item){
                if( $("#displayedMetricSelect").val() == item.field ) {
                      label = item.name;
@@ -462,7 +485,7 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 3:
+        case 4:
             //State
             $.each(ST, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -471,7 +494,7 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 4:
+        case 5:
             //grp3 w/ state divisions
             $.each(Group3_st, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -480,7 +503,7 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 5:
+        case 6:
             //grp 2 w/ state divisions
             $.each(Group2_st, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -489,7 +512,7 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 6:
+        case 7:
             //grp1 w/ state divisions
             $.each(Group1_st, function(index, item){
                if( $("#displayedMetricSelect").val() == item.field ) {
@@ -500,8 +523,8 @@ function getLegendLabels(sparrowLayerId){
             break;
         /////END PHOSPHORUS LAYERS___________________________________________________________
         /////BEGIN NITROGEN LAYERS___________________________________________________________
-        case 7: 
-            //HUC10
+        case 8: 
+            //NITRO CATCHMENTS
             $.each(Group3_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      label = item.name;
@@ -509,18 +532,9 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 8:
-            //HUC8
-            $.each(Group2_tn, function(index, item){
-                if( $("#displayedMetricSelect").val() == item.field ) {
-                     label = item.name;
-                }
-            });
-            return label;
-            break;
         case 9: 
-            //Independent Watershed
-             $.each(Group1_tn, function(index, item){
+            //HUC8
+            $.each(Group3_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      label = item.name;
                 }
@@ -528,6 +542,24 @@ function getLegendLabels(sparrowLayerId){
             return label;
             break;
         case 10:
+            //Tributary
+            $.each(Group2_tn, function(index, item){
+                if( $("#displayedMetricSelect").val() == item.field ) {
+                     label = item.name;
+                }
+            });
+            return label;
+            break;
+        case 11: 
+            //Main River Basin
+             $.each(Group1_tn, function(index, item){
+                if( $("#displayedMetricSelect").val() == item.field ) {
+                     label = item.name;
+                }
+            });
+            return label;
+            break;
+        case 12:
             //State
             $.each(ST_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -536,7 +568,7 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 11:
+        case 13:
             //grp3 w/ state divisions
             $.each(Group3_st_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -545,7 +577,7 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 12:
+        case 14:
             //grp 2 w/ state divisions
             $.each(Group2_st_tn, function(index, item){
                if( $("#displayedMetricSelect").val() == item.field ) {
@@ -554,7 +586,7 @@ function getLegendLabels(sparrowLayerId){
             });
             return label;
             break;
-        case 13:
+        case 15:
             //grp1 w/ state divisions
             $.each(Group1_st_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -575,8 +607,20 @@ function getChartOutfields(sparrowLayerId){
     //chartFieldsArr.push( $("#displayedMetricSelect").val() );
     switch(sparrowLayerId){
         /////BEGIN PHOSPHORUS LAYERS___________________________________________________________
-        case 0: 
-            //HUC10
+        case 1: 
+            //TTODO PHOS CATCHMENTS
+            $.each(Catchments, function(index, item){
+                if( $("#displayedMetricSelect").val() == item.field ) {
+                     $.each(item.chartOutfields, function(i, fields) {
+                        chartFieldsArr.push( fields );
+
+                    });
+                }
+            });
+            return chartFieldsArr;
+            break;
+        case 1: 
+            //HUC8 
             $.each(Group3, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      $.each(item.chartOutfields, function(i, fields) {
@@ -794,7 +838,7 @@ function generateRenderer(){
             app.layerDef = null;
         }
         
-        app.Url = "https://gis.wim.usgs.gov/arcgis/rest/services/SparrowTennessee/SparrowTennessee/MapServer/" + sparrowId;
+        app.Url = "https://gis.wim.usgs.gov/arcgis/rest/services/SparrowMRB3V2/SparrowMRB3/MapServer/" + sparrowId;
         
         var selectedMetric = $('#displayedMetricSelect')[0].value;
         app.outFields = [selectedMetric];

@@ -47,6 +47,8 @@ function loadEventHandlers() {
     /* GROUP RESULTS (AGGREGATE LAYER) EVENTS */
     //set initial Displayed Metric options
     $('#groupResultsSelect').on('loaded.bs.select', function(){  
+        $("#groupResultsSelect")[0].selectedIndex = groupResultsInitIndex;
+        $("#groupResultsSelect").selectpicker('refresh');
         populateMetricOptions($("#groupResultsSelect")[0].selectedIndex);
 
         if ( $("#groupResultsSelect")[0].selectedIndex == 0 ) {
