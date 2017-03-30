@@ -186,7 +186,8 @@ require([
     var layerDefObj = {};
     var AllAOIOptions = [];
     var Grp2NamDescArr = [];
-
+    var tableArr = []; //global for table updating
+    var labelArr = []; //glocal for table updating
     //load additional basemap since it isn't really a basemap but a tiled image layer
    /* var nationalMapBasemap = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer');
     $('#btnNatlMap').on('click', function () {
@@ -666,7 +667,7 @@ require([
         tableQuery.outFields = ['*'];
         tableQuery.where = whereClause;
 
-        tableQueryTask.execute(tableQuery, buildTable);
+        //tableQueryTask.execute(tableQuery, buildTable);
 
     }//END createTableQuery()
 
@@ -934,6 +935,11 @@ require([
             chartLabelsArr.push( obj.label ); //get labels ONLY as arr
         });
         
+        // initial table for Table tab
+         tableArr = featureSort; 
+         labelArr = chartLabelsArr;
+         buildTable(tableArr, labelArr);
+
         //removes 'group by' from labels  (MUST MATCH CATEGORIES)
         chartLabelsArr.shift();
 
@@ -1273,7 +1279,7 @@ require([
                                                 }
                                             }
                                         });
-                                    });
+                                    }); filterTable(categoryArr);
                                 }
                                 console.log(categoryArr);
                             }
@@ -1321,6 +1327,8 @@ require([
                                     });                                   
                                     
                                 }
+                            } else {
+                                filterTable();
                             }
                         }
                     }
@@ -1570,69 +1578,79 @@ require([
         handles: 'n'
     });
 
-    
-    function buildTable(response){        
-        var table = $('#resultsTable');
-        var sparrowLayerId = app.map.getLayer('SparrowRanking').visibleLayers[0];
-        
-        $('#tableTitle').empty();
-        //SET TABLE TITLES HERE
-        switch(sparrowLayerId){
-            case 0:
-                $('#tableTitle').html('Phosphorus');
-                break;
-            case 4:
-                 $('#tableTitle').html('Phosphorus Split by State');
-                break;
-            case 7:
-                $('#tableTitle').html('Nitrogen');
-                break;
-            case 11:
-                $('#tableTitle').html('Nitrogen Split by State');
-                break;
-        }
-        
-        
+    //function to filter table based on selection in chart
+    function filterTable(categories){
+        if (categories !== undefined){
+            var whichName = "";
+            switch($('#groupResultsSelect')[0].selectedIndex){
+                case 0:
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP3_NAM';
+                    else whichName = 'GRP_3_NAM';
+                    break;
+                case 1:
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP2_NAM';
+                    else whichName = 'GRP_2_NAM';
+                    break;
+                case 2: 
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP1_NAM';
+                    else whichName = 'GRP_1_NAM';
+                    break;           
+                case 3:
+                    whichName = 'ST';
+                    break;
+            }      
+            var newResponse = [];
+            $.each(categories, function(i,c){
+                newResponse.push(tableArr.filter(function(t){return t[whichName] == c;})[0]);
+            });
+            buildTable(newResponse, labelArr);
+        } else 
+            buildTable(tableArr, labelArr);
+    }
+
+    function buildTable(response, headers){        
+        $("#resultsTable").empty();
 
         $('#resultsTable').append('<thead></thead>');
         
-        var headerKeyArr = [];
-        $.each(response.features[0].attributes, function(key, value){
-            //important! UPDATE remove unneeded attributes from header ***must also remove from table below
-            //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "ST_GP3_NAM"){               
-                headerKeyArr.push(key);
-            //}
-        });
+        var headerKeyArr = headers;
+        headerKeyArr.push("Total");
+       // $.each(response[0], function(key, value){            
+       //     headerKeyArr.push(key);
+       // });
 
-        var headerHtmlStr = "";
-        headerHtmlStr = getTableFields(headerKeyArr, sparrowLayerId);
-        $('#resultsTable').find( 'thead' ).html(headerHtmlStr);
+        var htmlHeaderArr =  [];
+        htmlHeaderArr.push("<tr>");
+        $.each(headerKeyArr, function(index, key){
+            console.log(key);
+            htmlHeaderArr.push('<th>' + key + '</th>');
+        });
+        htmlHeaderArr.push("</tr>");
+
+        //headerHtmlStr = getTableFields(headerKeyArr, 0);
+        $('#resultsTable').find( 'thead' ).html(htmlHeaderArr.join(''));
 
         var htmlArr =[];
         $('#resultsTable').append('<tbody id="tableBody"></tbody>');
-        $.each(response.features, function(rowIndex, feature) {
+        $.each(response, function(rowIndex, feature) {
            // console.log('feature(outer)' + feature);
             var rowI = rowIndex;
 
             htmlArr.push("<tr id='row"+rowIndex+"'>")
 
-            //$("#tableBody").append("<tr id='row"+rowIndex+"'></tr>");
-            $.each(feature.attributes, function(key, value){
-                //important! UPDATE remove unneeded attributes from header ***must also remove from header above
-                //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "ST_GP3_NAM"){
-                    htmlArr.push('<td>'+ value +'</td>');                    
-                //}
+            $.each(feature, function(key, value){
+                htmlArr.push('<td>'+ value +'</td>');                
             });
 
             htmlArr.push("</tr>");
         });  
         $('#tableBody').html(htmlArr.join(''));
     
-    $('#tableResizable').show();
+      //  $('#tableWindowContainer').refresh();
     
-    var newWidth = $('#resultsTable').width();
-    $('.ui-widget-header').css('width', newWidth );
-    $('.ui-resizable-handle').css('width', newWidth );
+       /* var newWidth = $('#resultsTable').width();
+        $('.ui-widget-header').css('width', newWidth );
+        $('.ui-resizable-handle').css('width', newWidth );*/
     }//END buildTable
 
 

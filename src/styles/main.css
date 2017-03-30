@@ -365,6 +365,9 @@ a.lgi-zoom:hover {
     content:"\e080";
 }
 
+#tableTabPane {
+    background-color: white /* lobipanel table tab shouldn't be transparent*/
+}
 .row-map {
     background: #eee;
 }
