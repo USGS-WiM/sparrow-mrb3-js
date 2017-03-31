@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="bower_components/jquery-ui/themes/ui-lightness/jquery-ui.min.css"/> <!--recent Addition-->    
     <link rel="stylesheet" href="bower_components/bootstrap-map-js/dist/css/bootstrapmap.min.css">    
     <link rel="stylesheet" href="bower_components/bootstrap-sidebar/dist/css/sidebar.css">    
+    <link rel="stylesheet" href="bower_components/tablesorter/dist/css/theme.default.min.css">
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -41,6 +42,7 @@
     <script type="text/javascript" src="bower_components/highcharts/highcharts.js"></script>
     <script type="text/javascript" src="bower_components/lobipanel/dist/js/lobipanel.min.js"></script>    
     <script type="text/javascript" src="bower_components/tabletoCSV/dist/jquery.tabletoCSV.js"></script>
+    <script type="text/javascript" src="bower_components/tablesorter/dist/js/jquery.tablesorter.js"></script>
     <script type="text/javascript" src="bower_components/export-csv/export-csv.js"></script>
 
 
@@ -82,6 +84,7 @@
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
+            
         });
     </script>
 
@@ -618,7 +621,7 @@
                                 <div id="chartWindowContainer"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane" id="tableTabPane">
-                                <table class="table table-bordered" id="resultsTable"></table>
+                                <table class="table tablesorter" id="resultsTable"></table>
                             </div>        
                         </div>
                         <!--<div>-->

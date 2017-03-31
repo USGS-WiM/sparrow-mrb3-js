@@ -875,8 +875,7 @@ require([
     }
 
 
-    function showChart(response){
-
+    function showChart(response){        
         var columnLabels = [];
         var chartTitle;
         var categories = [];
@@ -937,7 +936,10 @@ require([
         
         // initial table for Table tab
          tableArr = featureSort; 
-         labelArr = chartLabelsArr;
+         labelArr = [];
+         $.each(chartLabelsArr, function(index, value){
+            labelArr.push(value);
+        });
          buildTable(tableArr, labelArr);
 
         //removes 'group by' from labels  (MUST MATCH CATEGORIES)
@@ -1197,10 +1199,10 @@ require([
         });
 
         //need listener to resize chart
-        $('#chartWindowDiv').resize(function() {
+        $('#chartWindowDiv').resize(function() {            
             var height = $('#chartWindowDiv').height()
             var width = $('#chartWindowDiv').width()
-            $('#chartWindowContainer').highcharts().setSize(width-50, height-75, true);
+            $('#chartWindowContainer').highcharts().setSize(width-50, height-105, true);//$('#chartWindowContainer').highcharts().setSize(width-50, height-75, true);
         });
 
 
@@ -1279,7 +1281,8 @@ require([
                                                 }
                                             }
                                         });
-                                    }); filterTable(categoryArr);
+                                    }); 
+                                    filterTable(categoryArr);
                                 }
                                 console.log(categoryArr);
                             }
@@ -1400,13 +1403,20 @@ require([
                     align: 'left',
                     x: 10,
                     verticalAlign: 'top',
-                    y: 0,
+                    y: 25,
                     floating: false,
                     padding: 5,
                     backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
                     borderColor: '#CCC',
                     borderWidth: 1,
-                    shadow: false
+                    shadow: false,                    
+                    labelFormatter: function () {
+                        var yI = this.name.indexOf("yield");
+                        var shortName = "";
+                        if (yI > -1) shortName = this.name.substring(0, yI-1);
+                        else shortName = this.name;
+                        return shortName;// this.name + ' (click to hide)';
+                    }
                 },
                 tooltip: {
                     formatter: function(){
@@ -1424,7 +1434,8 @@ require([
                         dataLabels: {
                             enabled: false,
                             color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
-                        }
+                        },
+                        events: { legendItemClick: function(){return false;}}
                     },
                     series:{
                         point:{
@@ -1569,7 +1580,9 @@ require([
             });
         
         }); //END self-invoking highcharts function
-
+        var height = $('#chartWindowDiv').height()
+        var width = $('#chartWindowDiv').width()
+        $('#chartWindowContainer').highcharts().setSize(width-50, height-105, true);
          
       
     } //END ShowChart()
@@ -1607,18 +1620,22 @@ require([
         } else 
             buildTable(tableArr, labelArr);
     }
-
-    function buildTable(response, headers){        
+    //table in lobipanel Table tab (updates everytime chart changes)
+    function buildTable(response, headers){    
         $("#resultsTable").empty();
-
+        var headerKeyArr = [];
+        $('#resultsTable').addClass('hover-highlight');
         $('#resultsTable').append('<thead></thead>');
         
-        var headerKeyArr = headers;
+        $.each(headers, function(h,head){
+            var yI = head.indexOf("yield");
+            var shortHeader = "";
+            if (yI > -1) shortHeader = head.substring(0,yI-1);
+            else shortHeader = head;
+            headerKeyArr.push(shortHeader);
+        });        
         headerKeyArr.push("Total");
-       // $.each(response[0], function(key, value){            
-       //     headerKeyArr.push(key);
-       // });
-
+       
         var htmlHeaderArr =  [];
         htmlHeaderArr.push("<tr>");
         $.each(headerKeyArr, function(index, key){
@@ -1645,6 +1662,30 @@ require([
             htmlArr.push("</tr>");
         });  
         $('#tableBody').html(htmlArr.join(''));
+       // $('#resultsTable').trigger('update');
+       // $( '.tablesorter' ).trigger( 'updateHeaders' );
+        $('.tablesorter').trigger("updateAll");
+        $('.tablesorter').tablesorter({
+            widthFixed: true,
+            onRenderHeader: function(){
+                if (this.context.innerText.trim() == "Soil-parent-rock")
+                    this.append('<div style="background:#0070C0;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Mined-land")
+                    this.append('<div style="background:#97DA7C;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Manure")
+                    this.append('<div style="background:#663100;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Agricultural-land")
+                    this.append('<div style="background:#FFEC99;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Urban-land")
+                    this.append('<div style="background:#FFCCFF;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Wastewater")
+                    this.append('<div style="background:#BF0000;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Atmospheric-deposition" || this.context.innerText.trim() == "Atmospheric deposition")
+                    this.append('<div style="background:#0070C0;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Fertilizer")
+                    this.append('<div style="background:#FFEC99;height: 3px;margin-bottom:2px;"></div>');
+            }
+        });    
     
       //  $('#tableWindowContainer').refresh();
     
@@ -1653,7 +1694,65 @@ require([
         $('.ui-resizable-handle').css('width', newWidth );*/
     }//END buildTable
 
+    //hover over table row, go highlight region on map
+    $(document).on('mouseenter', '#tableBody tr', function(e) {
+        
+       // $(this).addClass("hover");
+        var category = e.currentTarget.cells[0].innerHTML //this.category;  //refers to the selected chart area
+        var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
+        var URL = app.map.getLayer('SparrowRanking').url;
+        var fieldName = "";
 
+        switch ($('#groupResultsSelect')[0].selectedIndex){
+            case 0:
+                if( $('#st-select')[0].selectedIndex > 0) fieldName = 'ST_GP3_NAM';
+                else fieldName = 'GRP_3_NAM';                
+                break;
+            case 1:
+                if( $('#st-select')[0].selectedIndex > 0) fieldName = 'ST_GP2_NAM';
+                else fieldName = 'GRP_2_NAM';                
+                break;
+            case 2: 
+                if( $('#st-select')[0].selectedIndex > 0) fieldName = 'ST_GP1_NAM';
+                else fieldName = 'GRP_1_NAM';                
+                break;
+            case 3:
+                fieldName = 'ST';
+                break;        
+        }
+
+        var queryTask;
+        queryTask = new esri.tasks.QueryTask(URL + visibleLayers.toString() );
+
+        var graphicsQuery = new esri.tasks.Query();
+        graphicsQuery.returnGeometry = true; //important!
+        graphicsQuery.outSpatialReference = app.map.spatialReference;  //important!
+        graphicsQuery.outFields = [fieldName];
+        graphicsQuery.where = fieldName + "= '" + category + "'";
+                                    
+        queryTask.execute(graphicsQuery, responseHandler);
+
+        function responseHandler(response){
+            //remove only the mouseover graphic
+            $.each(app.map.graphics.graphics, function(i, graphic){
+                if (graphic.symbol.id == undefined || graphic.symbol.id !== "zoomHighlight"){
+                    app.map.graphics.remove(graphic);
+                }
+            });
+                      
+            var feature = response.features[0];                                       
+            var selectedSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([150,49,37]), 2), new Color([150,49,37, 0.33]) );
+            feature.setSymbol(selectedSymbol);
+            app.map.graphics.add(feature);
+        }
+    });
+    $(document).on('mouseleave', '#tableBody tr', function(e) {
+   //     $(this).removeClass("hover");
+    });
+    //}, function() {
+        //$(this).removeClass('hover');
+ //   });
+    
     function showModal() {
         $('#geosearchModal').modal('show');
     }

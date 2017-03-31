@@ -437,6 +437,21 @@ input[type="checkbox"], input[type="radio"] {
     padding-left:5px;
 }*/
 
+/* tablesorter added css for highlighting */
+/* TABLE BACKGROUND color (match the original theme) */
+table.hover-highlight td:before,
+table.focus-highlight td:before {
+  background: #fff;
+}
+
+/* HOVER ROW highlight colors */
+table.hover-highlight tbody > tr:hover > td, /* override tablesorter theme row hover */
+table.hover-highlight tbody > tr.odd:hover > td,
+table.hover-highlight tbody > tr.even:hover > td {
+  background-color: #ffa;
+}
+
+/* End tablesorter added css */
 .chartWindowMaximize{
     position:absolute;
     top: 200;
@@ -490,7 +505,9 @@ input[type="checkbox"], input[type="radio"] {
     top:65px !important;
 }
 */
-
+.hover{
+    background-color: antiquewhite;
+}
 .navbar-brand>img{
     display: inline-block;
 }
