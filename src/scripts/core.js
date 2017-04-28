@@ -83,13 +83,16 @@ require([
     parser.parse();
 
     app.dragInfoWindows = true;
-    app.defaultMapCenter = [-86, 36];
+
+    /* values come from config file */
+    app.defaultMapCenter = mapCenter;
+    app.defaultZoom = defaultZoomLevel;
 
     //setup map 
     app.map = Map('mapDiv', {
         basemap: 'gray',
         center: app.defaultMapCenter,
-        zoom: 7
+        zoom: app.defaultZoom
     });
 
 
@@ -194,9 +197,10 @@ require([
     });*/
 
     loadEventHandlers();
-    //setupQueryTask(serviceBaseURL + 2, [ 'GP2' ], '1=1');
+    //setupQueryTask(serviceBaseURL + 1, [ 'GP2', 'GRP_2_DESC' ], '1=1');
     //TODO: FIGURE OUT HOW TO USE THE QUERY WHERECLAUSE     Call setupQueryTask for every layer inqueryParameters
-    //TODO NO GP2 in those services since they don't nest.  Figure out what to do about that.
+    //setupQueryTask(serviceBaseURL + 4, ['ST', 'GP3', 'GP', 'GP1' ], '1=1');
+
     setupQueryTask(serviceBaseURL + 0, ['ST', 'GP3', 'GP2', 'GP1' ], '1=1');
 
     /*for (var key in queryParameters){
@@ -251,17 +255,27 @@ require([
                 layerDefObj.AOIST = undefined;
                 app.updateAOIs('grp1-select');
                 app.updateAOIs('grp2-select');
+                app.updateAOIs('grp3-select');
                 break;
             case 'AOI1':
                 //$("#grp1-select").empty();
                 layerDefObj.AOI1 = undefined;
                 app.updateAOIs('st-select');
                 app.updateAOIs('grp2-select');
+                app.updateAOIs('grp3-select');
                 break;
             case 'AOI2':
                 //$("#grp2-select").empty();
                 layerDefObj.AOI2 = undefined;
                 app.updateAOIs('grp1-select');
+                app.updateAOIs('grp3-select');
+                app.updateAOIs('st-select');
+                break;
+            case 'AOI3':
+                //$("#grp2-select").empty();
+                layerDefObj.AOI3 = undefined;
+                app.updateAOIs('grp1-select');
+                app.updateAOIs('grp2-select');
                 app.updateAOIs('st-select');
                 break;
         }               
@@ -308,13 +322,13 @@ require([
                     filteredAOIOptions Array of Objects Example         ]
                 [{                                                      ]
                     GP1: "Conasauga River",                       ]
-                    GP2: "03150101",                              ]
+                    GRP_2_NAM: "03150101",                              ]
                     GP3:"0315010101",                             ]
                     ST:"GA"   <--- Selected State                       ]
                 },                                                      ]
                 {                                                       ]
                     GP1: "Conasauga River",                       ]
-                    GP2: "03150101",                              ]
+                    GRP_2_NAM: "03150101",                              ]
                     GP3:"0315010102",  <-- Obj for every HUC10    ]
                     ST:"GA"                                             ]
                 }]                                                      ]
@@ -422,9 +436,9 @@ require([
                 
                 //set the filtered options
                 $.each(grp2Options, function(index, option){
-                    var grp2Desc = Grp2NamDescArr.filter(function(s){ return s.GP2 === option; })[0].GRP_2_DESC;
-                    //$('#grp2-select').append(new Option(option));
-                    $('#grp2-select').append('<option value="' + option + '">' + option + ' - ' + grp2Desc + '</option>');
+                    //var grp2Desc = Grp2NamDescArr.filter(function(s){ return s.GP2 === option; })[0].GRP_2_DESC;
+                    $('#grp2-select').append(new Option(option));
+                    //$('#grp2-select').append('<option value="' + option + '">' + option + ' - ' + grp2Desc + '</option>');
                 });
                 $('#grp2-select').selectpicker('refresh');
                 
@@ -579,7 +593,7 @@ require([
             if (response.length >= 1){
                 $.each(response, function(index, responseObj){
                     //Phosphorus Calibration Site InfoWindow
-                    if (responseObj.layerId === 16){
+                    if (responseObj.layerId === 14){
                         var model = 'Phosphorus';
                         var calibrationTemplate = new esri.InfoTemplate();
                         calibrationTemplate.setTitle('SPARROW ' + model + ' Calibration Site');
@@ -598,7 +612,7 @@ require([
                     }
 
                     //Phosphorus Calibration Site InfoWindow
-                    if (responseObj.layerId === 17){
+                    if (responseObj.layerId === 15){
                         var modelN = 'Nitrogen';
                         var calibrationTemplateN = new esri.InfoTemplate();
                         calibrationTemplateN.setTitle('SPARROW ' + modelN + ' Calibration Site');
@@ -672,7 +686,11 @@ require([
     }//END createTableQuery()
 
     app.createChartQuery = function(optionalWhereClause){
-
+        //if ($('#tableResizable').is(":visible")){
+        //    $('#tableResizable').hide();
+       // }
+        $("#tableButton").prop('disabled', true);
+        
         $('#chartContainer').empty();
         console.log('creating chart query');
         var chartQueryTask;
@@ -723,11 +741,14 @@ require([
         query.returnGeometry = false;
         query.outFields = outFieldsArr;
         query.where = whereClause;
-        if(url == serviceBaseURL + "1"){
+        //used to add custom field descriptions to HUC8 select
+        /*if(url == serviceBaseURL + "1"){
             queryTask.execute(query, populateGrp2Arr);
         }else{
             queryTask.execute(query, populateAOI);
-        }
+        }*/
+
+         queryTask.execute(query, populateAOI);        
         
     }
 
@@ -755,28 +776,40 @@ require([
         //IF options already exist, be sure to REMOVE OLD OPTIONS before calling this function
         
         // get UNIQUE options from AllAOIOptions global Object
+        var grp3Options = getUniqueArray(AllAOIOptions, 'GP3');// [...new Set(AllAOIOptions.map(item => item.GP2))];
         var grp2Options = getUniqueArray(AllAOIOptions, 'GP2');// [...new Set(AllAOIOptions.map(item => item.GP2))];
         var grp1Options = getUniqueArray(AllAOIOptions, 'GP1');//[...new Set(AllAOIOptions.map(item => item.GP1))];
         var STOptions = getUniqueArray(AllAOIOptions, 'ST');//[...new Set(AllAOIOptions.map(item => item.ST))];
 
         
-        console.log('ST options: ' + STOptions);
+        /*console.log('ST options: ' + STOptions);
         console.log('grp1 options: ' + grp1Options);
-        console.log('grp1 options: ' + grp2Options);
-        
-        
+        console.log('grp2 options: ' + grp2Options);
+        console.log('grp3 options: ' + grp3Options);*/
+
+        $.each(grp3Options, function(index, option){
+            if (option != " "){
+                $('#grp3-select').append(new Option(option));
+            }
+             
+        });
         $.each(grp2Options, function(index, option){
             //var grp2Desc = Grp2NamDescArr.filter(function(s){ return s.GP2 === option; })[0].GRP_2_DESC;
-            $('#grp2-select').append(new Option(option));
+            if (option != " "){
+                $('#grp2-select').append(new Option(option));
+            }
             //$('#grp2-select').append('<option value="' + option + '">' + option + ' - ' + grp2Desc + '</option>');
         });
         $.each(grp1Options, function(index, option){
-            $('#grp1-select').append(new Option(option));
+            if (option != " "){
+                $('#grp1-select').append(new Option(option));
+            }
         });
         $.each(STOptions, function(index, option){
             $('#st-select').append(new Option(option));
         });
         
+        $('#grp3-select').selectpicker('refresh');
         $('#grp2-select').selectpicker('refresh');
         $('#grp1-select').selectpicker('refresh');
         $('#st-select').selectpicker('refresh');
@@ -982,16 +1015,13 @@ require([
             var dropdown = $('#groupResultsSelect')[0].selectedIndex;
             switch ( dropdown ){
                 case 0:
-                    return 'Catchment';
-                    break;
-                case 0:
-                    return 'HUC8';
+                    return 'HUC10';
                     break;
                 case 1:
-                    return 'Tributary';
+                    return 'HUC8';
                     break;
                 case 2: 
-                    return 'Main River Basin';
+                    return 'Independent Watershed';
                     break;
                 case 3:
                     return 'State';
@@ -1004,111 +1034,97 @@ require([
             var label;
             switch( layerId ){
                 case 0:
-                   $.each(Catchments, function(index, object){
-                        if (object.field == $('#displayedMetricSelect').val() ){
-                            label = object.name;
-                        }
-                   });
-                    break;
-                case 1:
                    $.each(Group3, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 2:
+                case 1:
                     $.each(Group2, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 3: 
+                case 2: 
                     $.each(Group1, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 4:
+                case 3:
                     $.each(ST, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 5:
+                case 4:
                     $.each(Group3_st, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 6: 
+                case 5: 
                     $.each(Group2_st, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 7:
+                case 6:
                     $.each(Group1_st, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 8:
-                   $.each(Catchments_tn, function(index, object){
-                        if (object.field == $('#displayedMetricSelect').val() ){
-                            label = object.name;
-                        }
-                   });
-                    break;
-                case 9:
+                case 7:
                    $.each(Group3_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 10:
+                case 8:
                     $.each(Group2_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 11: 
+                case 9: 
                     $.each(Group1_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 12:
+                case 10:
                     $.each(ST_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 13:
+                case 11:
                     $.each(Group3_st_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 14: 
+                case 12: 
                     $.each(Group2_st_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
-                case 14:
+                case 13:
                     $.each(Group1_st_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
@@ -1205,7 +1221,7 @@ require([
             $('#chartWindowDiv').css('visibility', 'hidden');
             $('#chartWindowContainer').empty();
             $('#chartWindowPanelTitle').empty();
-            
+            $("#tableButton").prop("disabled", false);
         });
 
         //need listener to resize chart
@@ -1246,21 +1262,21 @@ require([
                                         switch (selectedIndex){
                                             case 0:
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP3_NAM';
+                                                    return 'SG3';
                                                 }else{
                                                     return 'GP3';
                                                 }
                                                 break;
                                             case 1:
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP2_NAM';
+                                                    return 'SG2';
                                                 }else{
                                                     return 'GP2';
                                                 }
                                                 break;
                                             case 2: 
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP1_NAM';
+                                                    return 'SG1';
                                                 }else{
                                                     return 'GP1';
                                                 }
@@ -1444,21 +1460,21 @@ require([
                                         switch (selectedIndex){
                                             case 0:
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP3_NAM';
+                                                    return 'SG3';
                                                 }else{
                                                     return 'GP3';
                                                 }
                                                 break;
                                             case 1:
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP2_NAM';
+                                                    return 'SG2';
                                                 }else{
                                                     return 'GP2';
                                                 }
                                                 break;
                                             case 2: 
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP1_NAM';
+                                                    return 'SG1';
                                                 }else{
                                                     return 'GP1';
                                                 }
@@ -1507,21 +1523,21 @@ require([
                                         switch (selectedIndex){
                                             case 0:
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP3_NAM';
+                                                    return 'SG3';
                                                 }else{
                                                     return 'GP3';
                                                 }
                                                 break;
                                             case 1:
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP2_NAM';
+                                                    return 'SG2';
                                                 }else{
                                                     return 'GP2';
                                                 }
                                                 break;
                                             case 2: 
                                                 if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'ST_GP1_NAM';
+                                                    return 'SG1';
                                                 }else{
                                                     return 'GP1';
                                                 }
@@ -1617,7 +1633,7 @@ require([
         var headerKeyArr = [];
         $.each(response.features[0].attributes, function(key, value){
             //important! UPDATE remove unneeded attributes from header ***must also remove from table below
-            //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "ST_GP3_NAM"){               
+            //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "SG3"){               
                 headerKeyArr.push(key);
             //}
         });
@@ -1637,7 +1653,7 @@ require([
             //$("#tableBody").append("<tr id='row"+rowIndex+"'></tr>");
             $.each(feature.attributes, function(key, value){
                 //important! UPDATE remove unneeded attributes from header ***must also remove from header above
-                //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "ST_GP3_NAM"){
+                //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "SG3"){
                     htmlArr.push('<td>'+ value +'</td>');                    
                 //}
             });
@@ -1646,11 +1662,11 @@ require([
         });  
         $('#tableBody').html(htmlArr.join(''));
     
-    $('#tableResizable').show();
-    
-    var newWidth = $('#resultsTable').width();
-    $('.ui-widget-header').css('width', newWidth );
-    $('.ui-resizable-handle').css('width', newWidth );
+        $('#tableResizable').show();
+
+        var newWidth = $('#resultsTable').width();
+        $('.ui-widget-header').css('width', newWidth );
+        $('.ui-resizable-handle').css('width', newWidth );
     }//END buildTable
 
 

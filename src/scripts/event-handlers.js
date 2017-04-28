@@ -21,7 +21,6 @@ function loadEventHandlers() {
     /*END RADIO EVENTS*/
 
     /* EXPORT TABLE EVENT*/
-
     $('#exportTableButton').on('click', function(){
         $("#resultsTable").tableToCSV();  //https://github.com/cyriac/jquery.tabletoCSV
     });
@@ -47,8 +46,6 @@ function loadEventHandlers() {
     /* GROUP RESULTS (AGGREGATE LAYER) EVENTS */
     //set initial Displayed Metric options
     $('#groupResultsSelect').on('loaded.bs.select', function(){  
-        $("#groupResultsSelect")[0].selectedIndex = groupResultsInitIndex;
-        $("#groupResultsSelect").selectpicker('refresh');
         populateMetricOptions($("#groupResultsSelect")[0].selectedIndex);
 
         if ( $("#groupResultsSelect")[0].selectedIndex == 0 ) {
@@ -57,8 +54,18 @@ function loadEventHandlers() {
             $("#tableButton").hide();
 
         }
+        
+        /* JUST A TEST FOR DEBUGGING
+        var layerDefinitions = [];
+        layerDefinitions[0] = "GP1 = 'Lake Superior'";
+        layerDefinitions[1] = "GP1 = 'Lake Superior'";
+        app.map.getLayer('SparrowRanking').setLayerDefinitions(layerDefinitions);
+        */
+
         generateRenderer();
     });
+
+
 
    //keep Displayed Metric options in sync 
     $("#groupResultsSelect").on('changed.bs.select', function(e){ 
@@ -151,9 +158,10 @@ function loadEventHandlers() {
         }
     });*/
 
+    /***TODO UPDATE IMPORTANT! -- THE CASES IN MRB3 ARE CORRECT, BUT THE LOGIC NEEDS TO BE REVISITED TO DETERMINE WHICH AOI COMBINATIONS NEED TO BE DISABLED****/
     $('.nonAOISelect').on('change', function(){
         switch($('#groupResultsSelect')[0].selectedIndex) {
-            case 0: //HUC10                
+            case 0: //Catchment               
                 //CHART button logic  commented out @ cooperator's request see github issue #82
 /*                if ($('#displayedMetricSelect')[0].selectedIndex == 4 || $('#displayedMetricSelect')[0].selectedIndex == 5){
                     $("#chartButton").addClass('disabled');
@@ -194,10 +202,7 @@ function loadEventHandlers() {
                 $(".grp2-warning").remove();
                 $('#grp2-select').selectpicker('refresh');
                 break;
-            case 2: //INDEPENDENT WATERSHED
-                //CHART button logic no longer needed but keep in case cooperator wants to switch back to no ACC load/yield charts               
-                /*$("#chartButton").removeClass('disabled');
-                $("#chartButton").removeAttr('disabled');*/
+            case 2: //Tributary
                 
                 //AOI logic (disable HUC8 & clear value if any)
                 if (app.getLayerDefObj().AOI2) {
@@ -220,10 +225,39 @@ function loadEventHandlers() {
                 $(".grp2-warning").remove();
                 $('#grp1-select').selectpicker('refresh');
                 break;
-            case 3: //STATE
-                //CHART button logic no longer needed but keep in case cooperator wants to switch back to no ACC load/yield charts
-                /*$("#chartButton").removeClass('disabled');
-                $("#chartButton").removeAttr('disabled');*/
+            case 3: //Main River Basin
+
+                //AOI logic (disable both IW and HUC8 & clear values if any)
+                //independent watershed
+                if (app.getLayerDefObj().AOI1) {
+                    $("#clear_btn").append("<a class='grp1-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Independent Watershed Area of Interest while grouping by State.'>"+
+                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
+                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
+                    $('#grp1-select option').attr("selected",false);
+                    app.clearOneLayerDefObj("AOI1"); //clear out this one 
+                    var newE2 = { currentTarget:{id: 'grp1-select', value: ""} }; //making an 'e' to pass along
+                    AOIChange(newE2); //go through the aoichange event to do the rest                    
+                }
+                $("#grp1-select").attr('disabled', 'disabled'); //independent watersheds     
+                $("#grp1-select").addClass('disabled');
+                $('#grp1-select').selectpicker('refresh');
+                
+                //huc8
+                if (app.getLayerDefObj().AOI2) {
+                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by State.'>"+
+                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
+                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
+                    $('#grp2-select option').attr("selected",false);
+                    app.clearOneLayerDefObj("AOI2"); //clear out this one 
+                    var newE3 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
+                    AOIChange(newE3); //go through the aoichange event to do the rest                    
+                }
+                $("#grp2-select").attr('disabled', 'disabled'); //huc8       
+                $("#grp2-select").addClass('disabled');
+                $('#grp2-select').selectpicker('refresh');
+                break;
+            case 4: //STATE
+
 
                 //AOI logic (disable both IW and HUC8 & clear values if any)
                 //independent watershed
