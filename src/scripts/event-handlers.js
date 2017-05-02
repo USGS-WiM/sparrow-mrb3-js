@@ -204,8 +204,8 @@ function loadEventHandlers() {
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp2-select option').attr("selected",false);
                     app.clearOneLayerDefObj("AOI2"); //clear out this one 
-                    var newE3 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE3); //go through the aoichange event to do the rest                    
+                    var newE2 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
+                    AOIChange(newE2); //go through the aoichange event to do the rest                    
                 }
                 $("#grp2-select").attr('disabled', 'disabled'); //huc8       
                 $("#grp2-select").addClass('disabled');
@@ -231,10 +231,10 @@ function loadEventHandlers() {
                     $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by Independent Watershed.'>"+
                         "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp2-select option').attr("selected",false);
+                    $('#grp3-select option').attr("selected",false);
                     app.clearOneLayerDefObj("AOI3"); //clear out this one 
-                    var newE1 = { currentTarget:{id: 'grp3-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE1); //go through the aoichange event to do the rest                    
+                    var newE3 = { currentTarget:{id: 'grp3-select', value: ""} }; //making an 'e' to pass along
+                    AOIChange(newE3); //go through the aoichange event to do the rest                    
                 }
                 //disable the HUC8 dropdown
                 $("#grp3-select").attr('disabled', 'disabled');//huc8
@@ -288,8 +288,8 @@ function loadEventHandlers() {
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp1-select option').attr("selected",false);
                     app.clearOneLayerDefObj("AOI1"); //clear out this one 
-                    var newE2 = { currentTarget:{id: 'grp1-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE2); //go through the aoichange event to do the rest                    
+                    var newE1 = { currentTarget:{id: 'grp1-select', value: ""} }; //making an 'e' to pass along
+                    AOIChange(newE1); //go through the aoichange event to do the rest                    
                 }
                 $("#grp1-select").attr('disabled', 'disabled'); //independent watersheds     
                 $("#grp1-select").addClass('disabled');
@@ -302,8 +302,8 @@ function loadEventHandlers() {
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp2-select option').attr("selected",false);
                     app.clearOneLayerDefObj("AOI2"); //clear out this one 
-                    var newE3 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE3); //go through the aoichange event to do the rest                    
+                    var newE2 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
+                    AOIChange(newE2); //go through the aoichange event to do the rest                    
                 }
                 $("#grp2-select").attr('disabled', 'disabled'); //huc8       
                 $("#grp2-select").addClass('disabled');
