@@ -32,7 +32,7 @@ require([
                     "visibleLayers": [sparrowOverlay],
                     "options":{
                         "id": "SparrowRanking",
-                        "opacity": 0.5,
+                        "opacity": 0.75,
                         "visible": true
                     },
                     "wimOptions":{

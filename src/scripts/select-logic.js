@@ -302,7 +302,7 @@ function setLayerDefs(){
         layerDefs[15] = definitionString;
         
         app.map.getLayer("SparrowRanking").setLayerDefinitions(layerDefs);
-        generateRenderer();
+        //generateRenderer();
 
         //updateAOI(layerDefs[0], selectId);
         //updateAOI(layerDefs[0], app.layerDefsObj.selectId);
@@ -619,7 +619,19 @@ function getChartOutfields(sparrowLayerId){
     switch(sparrowLayerId){
         /////BEGIN PHOSPHORUS LAYERS___________________________________________________________
         case 0: 
-            //HUC10
+            //PHOS CATCHMENTS
+            $.each(Catchments, function(index, item){
+                if( $("#displayedMetricSelect").val() == item.field ) {
+                     $.each(item.chartOutfields, function(i, fields) {
+                        chartFieldsArr.push( fields );
+
+                    });
+                }
+            });
+            return chartFieldsArr;
+            break;
+        case 1: 
+            //HUC8 
             $.each(Group3, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      $.each(item.chartOutfields, function(i, fields) {
@@ -630,8 +642,8 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 1:
-            //HUC8
+        case 2:
+            //Tributarys
             $.each(Group2, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      $.each(item.chartOutfields, function(i, fields) {
@@ -642,7 +654,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 2: 
+        case 3: 
             //Independent Watershed
              $.each(Group1, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -654,7 +666,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 3:
+        case 4:
             //State
             $.each(ST, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -666,7 +678,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 4:
+        case 5:
             //grp3 w/ state divisions
             $.each(Group3_st, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -678,7 +690,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 5:
+        case 6:
             //grp 2 w/ state divisions
             $.each(Group2_st, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -690,7 +702,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 6:
+        case 7:
             //grp1 w/ state divisions
             $.each(Group1_st, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -704,8 +716,8 @@ function getChartOutfields(sparrowLayerId){
             break;
         /////END PHOSPHORUS LAYERS___________________________________________________________
         /////BEGIN NITROGEN LAYERS___________________________________________________________
-        case 7: 
-            //HUC10
+        case 8: 
+            //Nitro Cats
             $.each(Group3_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      $.each(item.chartOutfields, function(i, fields) {
@@ -716,8 +728,20 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 8:
+        case 9: 
             //HUC8
+            $.each(Group3_tn, function(index, item){
+                if( $("#displayedMetricSelect").val() == item.field ) {
+                     $.each(item.chartOutfields, function(i, fields) {
+                        chartFieldsArr.push( fields );
+
+                    });
+                }
+            });
+            return chartFieldsArr;
+            break;
+        case 10:
+            //Trib
             $.each(Group2_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
                      $.each(item.chartOutfields, function(i, fields) {
@@ -728,7 +752,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 9: 
+        case 11: 
             //Independent Watershed
              $.each(Group1_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -740,7 +764,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 10:
+        case 12:
             //State
             $.each(ST_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -752,7 +776,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 11:
+        case 13:
             //grp3 w/ state divisions
             $.each(Group3_st_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -764,7 +788,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 12:
+        case 14:
             //grp 2 w/ state divisions
             $.each(Group2_st_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -776,7 +800,7 @@ function getChartOutfields(sparrowLayerId){
             });
             return chartFieldsArr;
             break;
-        case 13:
+        case 15:
             //grp1 w/ state divisions
             $.each(Group1_st_tn, function(index, item){
                 if( $("#displayedMetricSelect").val() == item.field ) {
@@ -840,7 +864,7 @@ function generateRenderer(){
         app.Url = "https://gis.wim.usgs.gov/arcgis/rest/services/SparrowMRB3V2/SparrowMRB3/MapServer/" + sparrowId;
         
         var selectedMetric = $('#displayedMetricSelect')[0].value;
-        //var selectedMetric = "ACCL";
+        //var selectedMetric = "ST_AL";
         app.outFields = [selectedMetric];
         app.currentAttribute = selectedMetric; 
 
@@ -851,7 +875,6 @@ function generateRenderer(){
 
         var classDef = new ClassBreaksDefinition();
         classDef.classificationField = app.currentAttribute;
-        //classDef.classificationField = "GP3_AL"
         classDef.classificationMethod = "quantile";
         classDef.breakCount = 5;
         //classDef.baseSymbol = sfs;
@@ -878,16 +901,10 @@ function generateRenderer(){
             //phos = brown
             colorRamp.fromColor = new Color.fromHex("#FFF1DC");
             colorRamp.toColor = new Color.fromHex("#632E0E");
-            //original
-            /*colorRamp.fromColor = Color.fromHex("#ffd084");
-            colorRamp.toColor = Color.fromHex("#845305");*/
         } else{
             //nitro = green
             colorRamp.fromColor = new Color.fromHex("#F5EBB8");
             colorRamp.toColor = new Color.fromHex("#004120");
-            //original
-            /*colorRamp.fromColor = Color.fromHex("#ffffcc");
-            colorRamp.toColor = Color.fromHex("#006837");*/
         }
           
         colorRamp.algorithm = "hsv"; // options are:  "cie-lab", "hsv", "lab-lch"
@@ -896,8 +913,8 @@ function generateRenderer(){
         var params = new GenerateRendererParameters();
         params.classificationDefinition = classDef;
         // limit the renderer to data being shown by the current layer
-        //params.formatLabel = true;
-        //params.where = app.layerDef; 
+        params.formatLabel = true;
+        params.where = app.layerDef; 
         var generateRenderer = new GenerateRendererTask(app.Url);
         console.log('execute Renderer w/ params:  ' + params);
         generateRenderer.execute(params, applyRenderer, errorHandler);
@@ -924,7 +941,8 @@ function generateRenderer(){
 
               //app.map.getLayer("SparrowRanking").refresh();
              //app.map.getLayer("SparrowRanking").show();
-              
+            
+
 
               //ONLY USED IF refreshing layer here instead of at layerDef Settings
               //setTimeout(app.map.getLayer("SparrowRanking").refresh(), 1000);
@@ -936,7 +954,7 @@ function generateRenderer(){
                 app.legend.refresh([{
                     layer: app.map.getLayer("SparrowRanking"),
                     title : getLegendLabels( app.map.getLayer('SparrowRanking').visibleLayers[0] )
-                }])
+                }]);
               }
 
 
@@ -956,6 +974,7 @@ function generateRenderer(){
             }, dom.byId("legendDiv"));
             app.legend.startup();
             
+             //app.map.getLayer("SparrowRanking").refresh();
             
         }
 

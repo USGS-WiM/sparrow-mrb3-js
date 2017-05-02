@@ -221,7 +221,6 @@ require([
                 break;
             case 'grp1-select':
                 layerDefObj.AOI1 = newObj.selectedValue;
-
                 break;
             case 'grp2-select':
                 layerDefObj.AOI2 = newObj.selectedValue;
@@ -242,6 +241,7 @@ require([
         $('#st-select').empty();
         $('#grp1-select').empty();
         $('#grp2-select').empty();
+        $('#grp3-select').empty();
         //UPDATE NOTE: add empty method for addtl. AOI selects
         defaultAOIOptions();
     };
@@ -638,9 +638,13 @@ require([
                     var attributes = response[0].feature.attributes;
                     var valuePairs = {};
 
-                    //need to wrap value in single quotes for ESRI REST Service query.
-
-                    var chartQueryArg = response[0].displayFieldName + " = " + "'" + response[0].value + "'"; 
+                    //need to wrap value in single quotes for ESRI REST Service query.  BUT ONLY IF THE DISPLAY FIELD IS A STRING!
+                    if (response[0].displayFieldName == "MRB_ID"){
+                        var chartQueryArg = response[0].displayFieldName + " = " + response[0].value; 
+                    } else{
+                        var chartQueryArg = response[0].displayFieldName + " = " + "'" + response[0].value + "'"; 
+                    }
+                    
                     $.each(fields, function(index, obj){
                         console.log(obj.attribute);
                     });
@@ -1015,15 +1019,18 @@ require([
             var dropdown = $('#groupResultsSelect')[0].selectedIndex;
             switch ( dropdown ){
                 case 0:
-                    return 'HUC10';
+                    return 'Catchment ID';
                     break;
                 case 1:
                     return 'HUC8';
                     break;
                 case 2: 
-                    return 'Independent Watershed';
+                    return 'Tributary';
                     break;
                 case 3:
+                    return 'Main River Basin';
+                    break;
+                case 4:
                     return 'State';
                     break;
             }
@@ -1034,97 +1041,111 @@ require([
             var label;
             switch( layerId ){
                 case 0:
-                   $.each(Group3, function(index, object){
+                   $.each(Catchments, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 1:
-                    $.each(Group2, function(index, object){
+                    $.each(Group3, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 2: 
-                    $.each(Group1, function(index, object){
+                    $.each(Group2, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 3:
-                    $.each(ST, function(index, object){
+                    $.each(Group1, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 4:
-                    $.each(Group3_st, function(index, object){
+                    $.each(ST, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 5: 
-                    $.each(Group2_st, function(index, object){
+                    $.each(Group3_st, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 6:
-                    $.each(Group1_st, function(index, object){
+                    $.each(Group2_st, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 7:
-                   $.each(Group3_tn, function(index, object){
+                   $.each(Group1_st, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 8:
-                    $.each(Group2_tn, function(index, object){
+                    $.each(Catchments_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 9: 
-                    $.each(Group1_tn, function(index, object){
+                    $.each(Group3_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 10:
-                    $.each(ST_tn, function(index, object){
+                    $.each(Group2_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 11:
-                    $.each(Group3_st_tn, function(index, object){
+                    $.each(Group1_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 12: 
-                    $.each(Group2_st_tn, function(index, object){
+                    $.each(ST_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
                         }
                    });
                     break;
                 case 13:
+                    $.each(Group3_st_tn, function(index, object){
+                        if (object.field == $('#displayedMetricSelect').val() ){
+                            label = object.name;
+                        }
+                   });
+                    break;
+                case 14:
+                    $.each(Group2_st_tn, function(index, object){
+                        if (object.field == $('#displayedMetricSelect').val() ){
+                            label = object.name;
+                        }
+                   });
+                    break;
+                case 15:
                     $.each(Group1_st_tn, function(index, object){
                         if (object.field == $('#displayedMetricSelect').val() ){
                             label = object.name;
@@ -1460,19 +1481,26 @@ require([
                                         switch (selectedIndex){
                                             case 0:
                                                 if( $('#st-select')[0].selectedIndex > 0){
+                                                    return 'MRB_ID';
+                                                }else{
+                                                    return 'MRB_ID';
+                                                }
+                                                break;
+                                            case 1:
+                                                if( $('#st-select')[0].selectedIndex > 0){
                                                     return 'SG3';
                                                 }else{
                                                     return 'GP3';
                                                 }
                                                 break;
-                                            case 1:
+                                            case 2:
                                                 if( $('#st-select')[0].selectedIndex > 0){
                                                     return 'SG2';
                                                 }else{
                                                     return 'GP2';
                                                 }
                                                 break;
-                                            case 2: 
+                                            case 3: 
                                                 if( $('#st-select')[0].selectedIndex > 0){
                                                     return 'SG1';
                                                 }else{
@@ -1480,7 +1508,7 @@ require([
                                                 }
                                                 break;
                                                 
-                                            case 3:
+                                            case 4:
                                                 return 'ST';
                                                 break;
                                         }
@@ -1499,8 +1527,13 @@ require([
                                     graphicsQuery.returnGeometry = true; //important!
                                     graphicsQuery.outSpatialReference = app.map.spatialReference;  //important!
                                     graphicsQuery.outFields = [fieldName];
-                                    graphicsQuery.where = fieldName + "= '" + category + "'";
-
+                                    
+                                    if (fieldName != "MRB_ID"){
+                                        graphicsQuery.where = fieldName + "= '" + category + "'";
+                                    }else {
+                                        //MRB_ID field is NOT a string!!!
+                                        graphicsQuery.where = fieldName + " = " + category;
+                                    }
                                                                 
                                     queryTask.execute(graphicsQuery, responseHandler);
 
@@ -1523,19 +1556,26 @@ require([
                                         switch (selectedIndex){
                                             case 0:
                                                 if( $('#st-select')[0].selectedIndex > 0){
+                                                    return 'MRB_ID';
+                                                }else{
+                                                    return 'MRB_ID';
+                                                }
+                                                break;
+                                            case 1:
+                                                if( $('#st-select')[0].selectedIndex > 0){
                                                     return 'SG3';
                                                 }else{
                                                     return 'GP3';
                                                 }
                                                 break;
-                                            case 1:
+                                            case 2:
                                                 if( $('#st-select')[0].selectedIndex > 0){
                                                     return 'SG2';
                                                 }else{
                                                     return 'GP2';
                                                 }
                                                 break;
-                                            case 2: 
+                                            case 3: 
                                                 if( $('#st-select')[0].selectedIndex > 0){
                                                     return 'SG1';
                                                 }else{
@@ -1543,7 +1583,7 @@ require([
                                                 }
                                                 break;
                                                 
-                                            case 3:
+                                            case 4:
                                                 return 'ST';
                                                 break;
                                         }
@@ -1551,6 +1591,13 @@ require([
 
                                     var queryField = switchWhereField( $('#groupResultsSelect')[0].selectedIndex );
                                     var queryString = queryField + " = " + "'" + this.category + "'";
+
+                                    if (fieldName != "MRB_ID"){
+                                        var queryString = queryField + " = " + "'" + this.category + "'";
+                                    }else {
+                                        //MRB_ID field is NOT a string!!!
+                                        var queryString = queryField + " = " + this.category ;
+                                    }
 
                                     //clear any zoom graphics
                                    /* $.each(app.map.graphics.graphics, function(i, graphic){
