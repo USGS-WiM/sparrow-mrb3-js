@@ -53,7 +53,7 @@ require([
             "layers": {
                 "Phosphorus Calibration Sites" : {
                     "url": serviceBaseURL,
-                    "visibleLayers": [14],
+                    "visibleLayers": [16],
                     "options": {
                         "id": "phosCalibration",
                         "opacity": 0.85,
@@ -71,7 +71,7 @@ require([
                 },
                 "Nitrogen Calibration Sites" : {
                     "url": serviceBaseURL,
-                    "visibleLayers": [15],
+                    "visibleLayers": [17],
                     "options": {
                         "id": "nitroCalibration",
                         "visible": false,
@@ -93,9 +93,9 @@ require([
             "showGroupHeading": true,
             "includeInLayerList": true,
             "layers": {
-                "Mainstems" : {
+                "Tennessee Mainstems" : {
                     "url": serviceBaseURL,
-                    "visibleLayers": [17],
+                    "visibleLayers": [18],
                     "options": {
                         "id": "mainstems",
                         "opacity": 0.75,
@@ -111,9 +111,9 @@ require([
                         "includeLegend" : true
                     }
                 },
-                "Streams" : {
+                "Tennessee Streams" : {
                     "url": serviceBaseURL,
-                    "visibleLayers": [16],
+                    "visibleLayers": [19],
                     "options": {
                         "id": "streams",
                         "visible": false,
