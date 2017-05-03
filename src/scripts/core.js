@@ -189,7 +189,8 @@ require([
     var layerDefObj = {};
     var AllAOIOptions = [];
     var Grp2NamDescArr = [];
-
+    var tableArr = []; //global for table updating
+    var labelArr = []; //glocal for table updating
     //load additional basemap since it isn't really a basemap but a tiled image layer
    /* var nationalMapBasemap = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer');
     $('#btnNatlMap').on('click', function () {
@@ -685,7 +686,7 @@ require([
         tableQuery.outFields = ['*'];
         tableQuery.where = whereClause;
 
-        tableQueryTask.execute(tableQuery, buildTable);
+        //tableQueryTask.execute(tableQuery, buildTable);
 
     }//END createTableQuery()
 
@@ -912,8 +913,7 @@ require([
     }
 
 
-    function showChart(response){
-
+    function showChart(response){        
         var columnLabels = [];
         var chartTitle;
         var categories = [];
@@ -972,6 +972,14 @@ require([
             chartLabelsArr.push( obj.label ); //get labels ONLY as arr
         });
         
+        // initial table for Table tab
+         tableArr = featureSort; 
+         labelArr = [];
+         $.each(chartLabelsArr, function(index, value){
+            labelArr.push(value);
+        });
+         buildTable(tableArr, labelArr);
+
         //removes 'group by' from labels  (MUST MATCH CATEGORIES)
         chartLabelsArr.shift();
 
@@ -1246,10 +1254,10 @@ require([
         });
 
         //need listener to resize chart
-        $('#chartWindowDiv').resize(function() {
+        $('#chartWindowDiv').resize(function() {            
             var height = $('#chartWindowDiv').height()
             var width = $('#chartWindowDiv').width()
-            $('#chartWindowContainer').highcharts().setSize(width-50, height-75, true);
+            $('#chartWindowContainer').highcharts().setSize(width-50, height-105, true);//$('#chartWindowContainer').highcharts().setSize(width-50, height-75, true);
         });
 
 
@@ -1328,7 +1336,8 @@ require([
                                                 }
                                             }
                                         });
-                                    });
+                                    }); 
+                                    filterTable(categoryArr);
                                 }
                                 console.log(categoryArr);
                             }
@@ -1376,6 +1385,8 @@ require([
                                     });                                   
                                     
                                 }
+                            } else {
+                                filterTable();
                             }
                         }
                     }
@@ -1447,13 +1458,20 @@ require([
                     align: 'left',
                     x: 10,
                     verticalAlign: 'top',
-                    y: 0,
+                    y: 25,
                     floating: false,
                     padding: 5,
                     backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
                     borderColor: '#CCC',
                     borderWidth: 1,
-                    shadow: false
+                    shadow: false,                    
+                    labelFormatter: function () {
+                        var yI = this.name.indexOf("yield");
+                        var shortName = "";
+                        if (yI > -1) shortName = this.name.substring(0, yI-1);
+                        else shortName = this.name;
+                        return shortName;// this.name + ' (click to hide)';
+                    }
                 },
                 tooltip: {
                     formatter: function(){
@@ -1471,7 +1489,8 @@ require([
                         dataLabels: {
                             enabled: false,
                             color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
-                        }
+                        }//,
+                        //events: { legendItemClick: function(){return false;}}
                     },
                     series:{
                         point:{
@@ -1642,7 +1661,9 @@ require([
             });
         
         }); //END self-invoking highcharts function
-
+        var height = $('#chartWindowDiv').height()
+        var width = $('#chartWindowDiv').width()
+        $('#chartWindowContainer').highcharts().setSize(width-50, height-105, true);
          
       
     } //END ShowChart()
@@ -1651,72 +1672,184 @@ require([
         handles: 'n'
     });
 
-    
-    function buildTable(response){        
-        var table = $('#resultsTable');
-        var sparrowLayerId = app.map.getLayer('SparrowRanking').visibleLayers[0];
-        
-        $('#tableTitle').empty();
-        //SET TABLE TITLES HERE
-        switch(sparrowLayerId){
-            case 0:
-                $('#tableTitle').html('Phosphorus');
-                break;
-            case 4:
-                 $('#tableTitle').html('Phosphorus Split by State');
-                break;
-            case 7:
-                $('#tableTitle').html('Nitrogen');
-                break;
-            case 11:
-                $('#tableTitle').html('Nitrogen Split by State');
-                break;
-        }
-        
-        
-
+    //function to filter table based on selection in chart
+    function filterTable(categories){
+        if (categories !== undefined){
+            var whichName = "";
+            switch($('#groupResultsSelect')[0].selectedIndex){
+                case 0:
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP3_NAM';
+                    else whichName = 'GRP_3_NAM';
+                    break;
+                case 1:
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP2_NAM';
+                    else whichName = 'GRP_2_NAM';
+                    break;
+                case 2: 
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP1_NAM';
+                    else whichName = 'GRP_1_NAM';
+                    break;           
+                case 3:
+                    whichName = 'ST';
+                    break;
+            }      
+            var newResponse = [];
+            $.each(categories, function(i,c){
+                newResponse.push(tableArr.filter(function(t){return t[whichName] == c;})[0]);
+            });
+            buildTable(newResponse, labelArr);
+        } else 
+            buildTable(tableArr, labelArr);
+    }
+    //table in lobipanel Table tab (updates everytime chart changes)
+    function buildTable(response, headers){    
+        $("#resultsTable").empty();
+        var headerKeyArr = [];
+        $('#resultsTable').addClass('hover-highlight');
         $('#resultsTable').append('<thead></thead>');
         
-        var headerKeyArr = [];
-        $.each(response.features[0].attributes, function(key, value){
-            //important! UPDATE remove unneeded attributes from header ***must also remove from table below
-            //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "SG3"){               
-                headerKeyArr.push(key);
-            //}
-        });
+        $.each(headers, function(h,head){
+            var yI = head.indexOf("yield");
+            var shortHeader = "";
+            if (yI > -1) shortHeader = head.substring(0,yI-1);
+            else shortHeader = head;
+            headerKeyArr.push(shortHeader);
+        });        
+        headerKeyArr.push("Total");
+       
+        var htmlHeaderArr =  [];
+        htmlHeaderArr.push("<tr>");
+        $.each(headerKeyArr, function(index, key){
+            console.log(key);
+            htmlHeaderArr.push('<th>' + key + '</th>');
 
-        var headerHtmlStr = "";
-        headerHtmlStr = getTableFields(headerKeyArr, sparrowLayerId);
-        $('#resultsTable').find( 'thead' ).html(headerHtmlStr);
+        });
+        htmlHeaderArr.push("</tr>");
+
+        //headerHtmlStr = getTableFields(headerKeyArr, 0);
+        $('#resultsTable').find( 'thead' ).html(htmlHeaderArr.join(''));
 
         var htmlArr =[];
         $('#resultsTable').append('<tbody id="tableBody"></tbody>');
-        $.each(response.features, function(rowIndex, feature) {
+        $.each(response, function(rowIndex, feature) {
            // console.log('feature(outer)' + feature);
             var rowI = rowIndex;
 
             htmlArr.push("<tr id='row"+rowIndex+"'>")
 
+            $.each(feature, function(key, value){
+                htmlArr.push('<td>'+ value +'</td>');                
             //$("#tableBody").append("<tr id='row"+rowIndex+"'></tr>");
-            $.each(feature.attributes, function(key, value){
-                //important! UPDATE remove unneeded attributes from header ***must also remove from header above
-                //if(key !== 'FID' && key !== "GRP_3_NA_1" && key !== "SG3"){
-                    htmlArr.push('<td>'+ value +'</td>');                    
-                //}
+
             });
 
             htmlArr.push("</tr>");
         });  
         $('#tableBody').html(htmlArr.join(''));
+       // $('#resultsTable').trigger('update');
+       // $( '.tablesorter' ).trigger( 'updateHeaders' );
+        $('.tablesorter').trigger("updateAll");
+        $('.tablesorter').tablesorter({
+            widthFixed: true,
+            onRenderHeader: function(){
+                if (this.context.innerText.trim() == "Soil-parent-rock")
+                    this.append('<div style="background:#0070C0;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Mined-land")
+                    this.append('<div style="background:#97DA7C;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Manure")
+                    this.append('<div style="background:#663100;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Agricultural-land")
+                    this.append('<div style="background:#FFEC99;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Urban-land")
+                    this.append('<div style="background:#FFCCFF;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Wastewater")
+                    this.append('<div style="background:#BF0000;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Atmospheric-deposition" || this.context.innerText.trim() == "Atmospheric deposition")
+                    this.append('<div style="background:#0070C0;height: 3px;margin-bottom:2px;"></div>');
+                else if (this.context.innerText.trim() == "Fertilizer")
+                    this.append('<div style="background:#FFEC99;height: 3px;margin-bottom:2px;"></div>');
+            }
+        });    
     
-        $('#tableResizable').show();
-
-        var newWidth = $('#resultsTable').width();
+      //  $('#tableWindowContainer').refresh();
+    
+       /* var newWidth = $('#resultsTable').width();
         $('.ui-widget-header').css('width', newWidth );
-        $('.ui-resizable-handle').css('width', newWidth );
+        $('.ui-resizable-handle').css('width', newWidth );*/
+
     }//END buildTable
 
+    //hover over table row, go highlight region on map
+    $(document).on('mouseenter', '#tableBody tr', function(e) {
+        
+       // $(this).addClass("hover");
+        var category = e.currentTarget.cells[0].innerHTML //this.category;  //refers to the selected chart area
+        var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
+        var URL = app.map.getLayer('SparrowRanking').url;
+        var fieldName = "";
 
+        switch ($('#groupResultsSelect')[0].selectedIndex){
+            case 0:
+                // UPDATE when split catchments are available
+                if( $('#st-select')[0].selectedIndex > 0) fieldName = 'MRB_ID';
+                else fieldName = 'MRB_ID';
+                break;
+            case 1:
+                if( $('#st-select')[0].selectedIndex > 0) fieldName = 'SG3';
+                else fieldName = 'GP3';
+                break;
+            case 2:
+                if( $('#st-select')[0].selectedIndex > 0) fieldName = 'SG2';
+                else fieldName = 'GP2';
+                break;
+            case 3: 
+                if( $('#st-select')[0].selectedIndex > 0) fieldName = 'SG1';
+                else fieldName = 'GP1';                
+                break;
+            case 4:
+                fieldName = 'ST';
+                break;        
+        }
+
+        var queryTask;
+        queryTask = new esri.tasks.QueryTask(URL + visibleLayers.toString() );
+
+        var graphicsQuery = new esri.tasks.Query();
+        graphicsQuery.returnGeometry = true; //important!
+        graphicsQuery.outSpatialReference = app.map.spatialReference;  //important!
+        graphicsQuery.outFields = [fieldName];
+
+        if (fieldName == "MRB_ID"){
+            graphicsQuery.where = fieldName + " = " + category; 
+        } else{
+            graphicsQuery.where = fieldName + "= '" + category + "'";
+        }
+
+        
+                                    
+        queryTask.execute(graphicsQuery, responseHandler);
+
+        function responseHandler(response){
+            //remove only the mouseover graphic
+            $.each(app.map.graphics.graphics, function(i, graphic){
+                if (graphic.symbol.id == undefined || graphic.symbol.id !== "zoomHighlight"){
+                    app.map.graphics.remove(graphic);
+                }
+            });
+                      
+            var feature = response.features[0];                                       
+            var selectedSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([150,49,37]), 2), new Color([150,49,37, 0.33]) );
+            feature.setSymbol(selectedSymbol);
+            app.map.graphics.add(feature);
+        }
+    });
+    $(document).on('mouseleave', '#tableBody tr', function(e) {
+   //     $(this).removeClass("hover");
+    });
+    //}, function() {
+        //$(this).removeClass('hover');
+ //   });
+    
     function showModal() {
         $('#geosearchModal').modal('show');
     }
