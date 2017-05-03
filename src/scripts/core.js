@@ -1434,8 +1434,8 @@ require([
                         dataLabels: {
                             enabled: false,
                             color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
-                        },
-                        events: { legendItemClick: function(){return false;}}
+                        }//,
+                        //events: { legendItemClick: function(){return false;}}
                     },
                     series:{
                         point:{

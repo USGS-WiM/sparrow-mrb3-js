@@ -1,7 +1,7 @@
 <!DOCTYPE html5>
 <html>
 <head>
-    <title>SPARROW Tennessee</title>
+    <title>SPARROW MRB3</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -38,6 +38,7 @@
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
+            
         });
     </script>
 
@@ -59,7 +60,7 @@
             </button>
             <a class="navbar-brand" href="http://usgs.gov">
                 <img alt="USGS logo" height="38px" src="images/USGS_ID_white.png">
-                <span class='hidden-xs' style='font-size:20px;display:inline-block;'>&nbsp;&nbsp;SPARROW Tennessee</span>
+                <span class='hidden-xs' style='font-size:20px;display:inline-block;'>&nbsp;&nbsp;SPARROW MRB3</span>
             </a>
             
         </div>
@@ -132,7 +133,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button class="close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;">&times;</button>
-                <h4 class="modal-title">About SPARROW Tennessee v0.9.0</h4>
+                <h4 class="modal-title">About SPARROW MRB3 v0.9.0</h4>
             </div>
             <div id="aboutModalBody" class="modal-body">
                 <ul class="nav nav-tabs" id="aboutModalTabs">
@@ -146,7 +147,7 @@
                     <div role="tabpanel" class="tab-pane" id="aboutTabPane"></br>
                         <p style="color:black; font-size: larger">SPARROW Surface Water-Quality Modeling <a href="https://water.usgs.gov/nawqa/sparrow/" target="blank">https://water.usgs.gov/nawqa/sparrow/</a></p>
 
-                        <p style="color:black; font-size: larger">Documentation of the SPARROW model for Tennessee</p>
+                        <p style="color:black; font-size: larger">Documentation of the SPARROW model for MRB3</p>
                         <p>Hoos, A.B., and Wang, S., 2017, Adapting a regional water-quality model for a statewide watershed management application – example for the southeastern U.S.: Journal TBD**</p>
                         
                         <p style="color:black; font-size: larger">Documentation of the modeling tool SPARROW (SPAtially Referenced Regression On Watershed attributes)</p>
@@ -166,6 +167,7 @@
                         U.S. Department of Agriculture-Natural Resources Conservation Service, U.S. Geological Survey, and Environmental Protection Agency, 2016, Watershed Boundary Dataset: <a href="http://datagateway.nrcs.usda.gov" target="blank">http://datagateway.nrcs.usda.gov [Accessed 2/2/2016].</a></p>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="contactTabPane"></br>
+                        <!--
                         <h3>Anne Hoos</h3>
                         <p>Hydrologist<br/>615-837-4760<br/><a href="mailto:abhoos@usgs.gov">abhoos@usgs.gov</a><br/><a href="https://www.usgs.gov/staff-profiles/anne-b-hoos" target="blank">https://www.usgs.gov/staff-profiles/anne-b-hoos</a></p>
 
@@ -174,7 +176,7 @@
 
                         <h3>USGS Lower Mississippi Gulf Water Science Center</h3>
                         <p>640 Grassmere Park, Suite 100<br/>Nashville, TN  37211<br/><a href="https://www.usgs.gov/centers/lmg-water" target="blank">https://www.usgs.gov/centers/lmg-water</a></p>
-
+                        -->
                         
                     </div>
                     <div role="tabpanel" class="tab-pane" id="definitionsTabPane"></br>
@@ -217,7 +219,7 @@
 
             <div class="modal-footer">
                 <p style="color:black; margin-left:35px;text-align:left">
-                    For more information about the SPARROW Tennessee Web Interface please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a>
+                    For more information about the SPARROW Web Interface please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a>
                 </p>
                 <button class=" btn btn-default close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;" class="btn btn-default">Close</button>
             </div>
@@ -504,13 +506,11 @@
                             </button>
                         </div>
 
-                        <div class="btn">
+                       <!-- <div class="btn">
                             <button type="button" class="btn btn-primary" data-target="tableModal" style="display:none;" id="tableButton">
                                 <span class="glyphicon glyphicon-list-alt"></span> Show Table
                             </button>
-                        </div>
-
-                        
+                        </div>-->                         
 
 
                     </div><!--END panel body-->
@@ -555,22 +555,34 @@
                 </div>
 
                 <!--LOBIPANEL EXPERIMENTAL________________________________________________________________________________________________________________________-->
-                <div id="chartWindowDiv" class="panel panel-default chartWindowMaximize">
+                <div id="chartWindowDiv" class="panel panel-default chartWindowMaximize" role="tabpanel">
                     <div class="panel-heading">
                         <div class="panel-title">
                             <h4 id="chartWindowPanelTitle"></h4>
                         </div>
                     </div>
-                    <div class="panel-body" id="chartWindowContainer">
-                        <div>
-                          <!--<button id="downloadXLS" class="btn btn-default" data-type="application/vnd.ms-excel">Export Data</button>-->
+                    <div class="panel-body"><!-- id="chartWindowContainer">  <i class="fa fa-line-chart">&nbsp;-->
+                        <ul class="nav nav-tabs" id="lobiPanelTabs">
+                            <li role="presentation" class="active">
+                                <a id="chartTab" href="#chartTabPane" data-toggle="tab"><i class="fa fa-line-chart"></i>&nbsp;Chart</a>
+                            </li>
+                            <li role="presentation">
+                                <a id="tableTab" href="#tableTabPane" data-toggle="tab"><i class="fa fa-list"></i>&nbsp;Table</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="chartTabPane">
+                                <div id="chartWindowContainer"></div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="tableTabPane">
+                                <table class="table tablesorter" id="resultsTable"></table>
+                            </div>        
+                        </div>
+                        <!--<div>-->
+                          <!--<button id="downloadXLS" class="btn btn-default" data-type="application/vnd.ms-excel">Export Data</button>
                           <button id="resetButton" class="btn btn-default" disable="true">Reset Zoom</button>
-                       </div>
-                        
+                       </div>-->                        
                     </div>
-                        
-                    
-
                 </div>
                 
 
@@ -583,8 +595,8 @@
             
 
 
-            <div style="position:absolute; bottom:0; display:none;z-index: 100" id="tableResizable" class="ui-widget-content">
-                <!--<button type='button' class='close pull-left' data-dismiss='tableResizable' id="tableResizable_Close" aria-hidden='true'>x</button>-->
+           <!-- <div style="position:absolute; bottom:0; display:none;z-index: 100" id="tableResizable" class="ui-widget-content">-->
+                <!--<button type='button' class='close pull-left' data-dismiss='tableResizable' id="tableResizable_Close" aria-hidden='true'>x</button>
                 <h3 class="ui-widget-header" id="tableTitle"></h3>
                 <table class="table table-bordered" id="resultsTable"></table>
                 <div class="btn">
@@ -596,7 +608,7 @@
                     </button>
                 </div>
         
-            </div>
+            </div>-->
 
             <div id="homeButton"></div>
             <div id="locateButton"></div>
