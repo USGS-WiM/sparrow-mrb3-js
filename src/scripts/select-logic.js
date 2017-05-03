@@ -230,7 +230,7 @@ function AOIChange(e){
 
     setLayerDefs();    
 
-    generateRenderer();
+    //generateRenderer();
 
     if( $("#chartWindowDiv").css("visibility") == "visible" ) {
         app.map.graphics.clear();
@@ -301,8 +301,8 @@ function setLayerDefs(){
         layerDefs[14] = definitionString;
         layerDefs[15] = definitionString;
         
-        app.map.getLayer("SparrowRanking").setLayerDefinitions(layerDefs);
-        //generateRenderer();
+        app.map.getLayer("SparrowRanking").setLayerDefinitions(layerDefs, true);
+        generateRenderer();
 
         //updateAOI(layerDefs[0], selectId);
         //updateAOI(layerDefs[0], app.layerDefsObj.selectId);
