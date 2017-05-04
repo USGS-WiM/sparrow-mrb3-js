@@ -1288,35 +1288,35 @@ require([
                     events: {
                         selection: function (e) {
                             function switchWhereField(selectedIndex){
-                                        switch (selectedIndex){
-                                            case 0:
-                                                if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'SG3';
-                                                }else{
-                                                    return 'GP3';
-                                                }
-                                                break;
-                                            case 1:
-                                                if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'SG2';
-                                                }else{
-                                                    return 'GP2';
-                                                }
-                                                break;
-                                            case 2: 
-                                                if( $('#st-select')[0].selectedIndex > 0){
-                                                    return 'SG1';
-                                                }else{
-                                                    return 'GP1';
-                                                }
-                                                break;
-                                                
-
-                                            case 3:
-                                                return 'ST';
-                                                break;
+                                switch (selectedIndex){
+                                    case 0:
+                                        if( $('#st-select')[0].selectedIndex > 0){
+                                            return 'SG3';
+                                        }else{
+                                            return 'GP3';
                                         }
-                                    }
+                                        break;
+                                    case 1:
+                                        if( $('#st-select')[0].selectedIndex > 0){
+                                            return 'SG2';
+                                        }else{
+                                            return 'GP2';
+                                        }
+                                        break;
+                                    case 2: 
+                                        if( $('#st-select')[0].selectedIndex > 0){
+                                            return 'SG1';
+                                        }else{
+                                            return 'GP1';
+                                        }
+                                        break;
+                                        
+
+                                    case 3:
+                                        return 'ST';
+                                        break;
+                                }
+                            }
 
                             var categoryArr = []        
 
@@ -1663,9 +1663,8 @@ require([
         }); //END self-invoking highcharts function
         var height = $('#chartWindowDiv').height()
         var width = $('#chartWindowDiv').width()
-        $('#chartWindowContainer').highcharts().setSize(width-50, height-105, true);
-         
-      
+        $('#chartWindowContainer').highcharts().setSize(width-50, height-105, true);         
+        
     } //END ShowChart()
 
     $('#tableResizable').resizable({

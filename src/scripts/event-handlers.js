@@ -65,6 +65,39 @@ function loadEventHandlers() {
         generateRenderer();
     });
 
+    // selector for click individual polygons button and draw square around to select multiple polygons
+    var clickSelectionActive = false;    
+    var selectPolygons = $('#clickPolyButton');
+    selectPolygons.click(function(){        
+        if (clickSelectionActive) {
+            selectPolygons.removeClass("active");
+            selectPolygons.html('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Select');
+            app.map.setMapCursor("auto");
+            clickSelectionActive = false;
+        } else if (!clickSelectionActive) {
+            selectPolygons.addClass("active");
+            selectPolygons.html('<i class="glyphicon glyphicon-stop"></i>&nbsp;&nbsp;Stop selecting');
+            app.map.setMapCursor("crosshair");
+          //  clickRemoveSelectionActive = false;
+            clickSelectionActive = true;
+        }
+    });
+    var drawSelectionActive = false;
+    var drawPolygonSquare = $('#drawPolyButton');
+    drawPolygonSquare.click(function(){        
+        if (drawSelectionActive) {
+            drawPolygonSquare.removeClass("active");
+            drawPolygonSquare.html('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Draw');
+            app.map.setMapCursor("auto");
+            drawSelectionActive = false;
+        } else if (!drawSelectionActive) {
+            drawPolygonSquare.addClass("active");
+            drawPolygonSquare.html('<i class="glyphicon glyphicon-stop"></i>&nbsp;&nbsp;Stop drawing');
+            app.map.setMapCursor("crosshair");
+          //  clickRemoveSelectionActive = false;
+            drawSelectionActive = true;
+        }
+    });
 
 
    //keep Displayed Metric options in sync 
@@ -377,6 +410,7 @@ function loadEventHandlers() {
     
     //map click w/ identifyParams  -- more params set in executeIdentifyTask();
     app.map.on("click", function(evt) { 
+        
         app.identifyParams = new esri.tasks.IdentifyParameters();
         app.identifyParams.tolerance = 8;
         app.identifyParams.returnGeometry = true;
@@ -387,7 +421,12 @@ function loadEventHandlers() {
         if (app.map.getLayer("SparrowRanking").layerDefinitions){
             app.identifyParams.layerDefinitions = app.map.getLayer("SparrowRanking").layerDefinitions;
         }
+        if (clickSelectionActive) {
+            // they are selecting polgyons
+        //    app.map.getLayer("SparrowRanking").selectFeatures(app.identifyParams, FeatureLayer.SELECTION_ADD);
+        } else {
         app.executeIdentifyTask(evt) 
+        }
     });
 
     
