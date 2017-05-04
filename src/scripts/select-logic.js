@@ -282,6 +282,17 @@ function setLayerDefs(){
         
         var layerDefs = [];
 
+/*        if (layerDefObj.AOI3){
+            layerDefs[0] = definitionString;
+            layerDefs[1] = definitionString;
+        }
+        if (layerDefObj.AOI2){
+            layerDefs[0] = definitionString;
+            layerDefs[2] = definitionString;
+            layerDefs[5] = definitionString;
+            layerDefs[6] = definitionString;
+        }*/
+
         //LayerDefs on ALL Layers
         /***TODO UPDATE IMPORTANT -- note that not all of these layer combinations are going to work with the attributes we have currently.  Some layer defs will not set because the fields don't exist***/
         layerDefs[0] = definitionString; //contains ST, GP1, GP2, GP3, SG1, SG2, SG3
@@ -292,17 +303,20 @@ function setLayerDefs(){
         layerDefs[5] = definitionString; //contains ST, GP2, GP1;
         layerDefs[6] = definitionString; //contains SG2, ST, GP2, GP1;  NO GP3/HUC8
         layerDefs[7] = definitionString; //contains SG1, ST, GP1;       NO GP3/HUC8, NO GP2/Tributary
-        layerDefs[8] = definitionString;
+        
+
+        /*layerDefs[8] = definitionString;
         layerDefs[9] = definitionString;
         layerDefs[10] = definitionString;
         layerDefs[11] = definitionString;
         layerDefs[12] = definitionString;
         layerDefs[13] = definitionString;
         layerDefs[14] = definitionString;
-        layerDefs[15] = definitionString;
+        layerDefs[15] = definitionString;*/
         
-        app.map.getLayer("SparrowRanking").setLayerDefinitions(layerDefs, true);
-        generateRenderer();
+        var layer = app.map.getLayer("SparrowRanking");
+        layer.setLayerDefinitions(layerDefs);
+        //generateRenderer();
 
         //updateAOI(layerDefs[0], selectId);
         //updateAOI(layerDefs[0], app.layerDefsObj.selectId);
@@ -867,16 +881,16 @@ function generateRenderer(){
         //var selectedMetric = "ST_AL";
         app.outFields = [selectedMetric];
         app.currentAttribute = selectedMetric; 
-
-        /*var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-    new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
-    new Color([255,0,0]), 2),new Color([255,255,0,0.25])
-  );*/
+        var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+            new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
+            new Color([255,0,0]), 2),new Color([255,255,0,0.25])
+          );
 
         var classDef = new ClassBreaksDefinition();
         classDef.classificationField = app.currentAttribute;
         classDef.classificationMethod = "quantile";
         classDef.breakCount = 5;
+
         //classDef.baseSymbol = sfs;
         classDef.baseSymbol = new SimpleFillSymbol("solid", null, null);
         /*classDef.baseSymbol = new SimpleFillSymbol({

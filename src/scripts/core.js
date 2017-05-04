@@ -729,7 +729,7 @@ require([
 
         //setup esri query
         var chartQuery = new esri.tasks.Query();
-        chartQuery.returnGeometry = false;
+        chartQuery.returnGeometry = true;
         chartQuery.outFields = outfieldsArr;
         chartQuery.where = whereClause;
 
