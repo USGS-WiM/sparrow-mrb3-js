@@ -66,39 +66,49 @@ function loadEventHandlers() {
     });
 
     // selector for click individual polygons button and draw square around to select multiple polygons
-    var clickSelectionActive = false;    
+     
     var selectPolygons = $('#clickPolyButton');
     selectPolygons.click(function(){        
-        if (clickSelectionActive) {
+        if (app.clickSelectionActive) {
             selectPolygons.removeClass("active");
             selectPolygons.html('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Select');
             app.map.setMapCursor("auto");
-            clickSelectionActive = false;
-        } else if (!clickSelectionActive) {
+            app.clickSelectionActive = false;
+        } else if (!app.clickSelectionActive) {
             selectPolygons.addClass("active");
             selectPolygons.html('<i class="glyphicon glyphicon-stop"></i>&nbsp;&nbsp;Stop selecting');
             app.map.setMapCursor("crosshair");
           //  clickRemoveSelectionActive = false;
-            clickSelectionActive = true;
+            app.clickSelectionActive = true;
         }
     });
-    var drawSelectionActive = false;
+     
+   /*commented out for now. not sure if we need draw
     var drawPolygonSquare = $('#drawPolyButton');
     drawPolygonSquare.click(function(){        
-        if (drawSelectionActive) {
+        if (app.drawSelectionActive) {
             drawPolygonSquare.removeClass("active");
             drawPolygonSquare.html('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Draw');
             app.map.setMapCursor("auto");
-            drawSelectionActive = false;
-        } else if (!drawSelectionActive) {
+            app.drawSelectionActive = false;
+        } else if (!app.drawSelectionActive) {
             drawPolygonSquare.addClass("active");
             drawPolygonSquare.html('<i class="glyphicon glyphicon-stop"></i>&nbsp;&nbsp;Stop drawing');
             app.map.setMapCursor("crosshair");
           //  clickRemoveSelectionActive = false;
-            drawSelectionActive = true;
+            app.drawSelectionActive = true;
         }
     });
-
+*/
+    var showCustomChart = $('#customChartButton');
+    showCustomChart.click(function() {
+        var formattedString = app.userSelectedDispFieldName + " IN (" + app.userSelectedShapes.join(",") + ")";
+        app.customChartClicked = true;
+        console.log("Custom Click: " + formattedString);
+        app.createChartQuery(formattedString);
+        app.userSelectedDispFieldName = "";
+        app.userSelectedShapes = [];
+    });
 
    //keep Displayed Metric options in sync 
     $("#groupResultsSelect").on('changed.bs.select', function(e){ 
@@ -409,8 +419,7 @@ function loadEventHandlers() {
     //end code for adding draggability to infoWindow
     
     //map click w/ identifyParams  -- more params set in executeIdentifyTask();
-    app.map.on("click", function(evt) { 
-        
+    app.map.on("click", function(evt) {
         app.identifyParams = new esri.tasks.IdentifyParameters();
         app.identifyParams.tolerance = 8;
         app.identifyParams.returnGeometry = true;
@@ -421,12 +430,8 @@ function loadEventHandlers() {
         if (app.map.getLayer("SparrowRanking").layerDefinitions){
             app.identifyParams.layerDefinitions = app.map.getLayer("SparrowRanking").layerDefinitions;
         }
-        if (clickSelectionActive) {
-            // they are selecting polgyons
-        //    app.map.getLayer("SparrowRanking").selectFeatures(app.identifyParams, FeatureLayer.SELECTION_ADD);
-        } else {
-        app.executeIdentifyTask(evt) 
-        }
+        app.executeIdentifyTask(evt);
+        
     });
 
     
