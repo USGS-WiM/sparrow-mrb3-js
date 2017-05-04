@@ -83,6 +83,11 @@ require([
     parser.parse();
 
     app.dragInfoWindows = true;
+    app.clickSelectionActive = false;   // used when they are in selection mode
+    app.drawSelectionActive = false; // used when they are rectangle selection mode
+    app.userSelectedDispFieldName = ""; // holder of which DisplayFieldName they are clicking
+    app.userSelectedShapes = []; 
+    app.customChartClicked = false; // when custom chart button clicked, need to let the chart know to show 'Show Full Chart' button
 
     /* values come from config file */
     app.defaultMapCenter = mapCenter;
@@ -587,73 +592,118 @@ require([
         
         //Deferred callback
         var deferred = app.identifyTask.execute(app.identifyParams).addCallback(function(response){
-
-            var calibrationInfoWindow = false;
-            
-            //check response length to make sure a feature was clicked  (handles Layerdefs automatically)
-            if (response.length >= 1){
-                $.each(response, function(index, responseObj){
-                    //Phosphorus Calibration Site InfoWindow
-                    if (responseObj.layerId === 14){
-                        var model = 'Phosphorus';
-                        var calibrationTemplate = new esri.InfoTemplate();
-                        calibrationTemplate.setTitle('SPARROW ' + model + ' Calibration Site');
-                        calibrationTemplate.setContent('<div><b>Station Name:</b> ' + responseObj.feature.attributes.name + '</div><br>' +
-                                                        '<div><b>Station ID:</b> </b>' + responseObj.feature.attributes.staid + '</div><br>' +
-                                                        '<div><b>SPARROW Reach ID: </b>' + responseObj.feature.attributes.MRB_ID + '</div><br>'+
-                                                        '<div><b>Fluxmaster Load' + chartUnits +': </b>' + responseObj.feature.attributes.LOAD_A_665 + '</div><br>' +
-                                                        '<div><b>SPARROW Estimated Load ' + chartUnits +': </b>' + responseObj.feature.attributes.PLOAD_665 + '</div><br>');
-                
-                        var graphic = new Graphic();
-                        var feature = graphic;
-                        responseObj.feature.setInfoTemplate(calibrationTemplate);
-                        app.map.infoWindow.setFeatures([responseObj.feature]);
-                        app.map.infoWindow.show(evt.mapPoint);
-                        calibrationInfoWindow = true;
-                    }
-
-                    //Phosphorus Calibration Site InfoWindow
-                    if (responseObj.layerId === 15){
-                        var modelN = 'Nitrogen';
-                        var calibrationTemplateN = new esri.InfoTemplate();
-                        calibrationTemplateN.setTitle('SPARROW ' + modelN + ' Calibration Site');
-                        calibrationTemplateN.setContent('<div><b>Station Name:</b> ' + responseObj.feature.attributes.name + '</div><br>' +
-                                                        '<div><b>Station ID:</b> </b>' + responseObj.feature.attributes.staid + '</div><br>' +
-                                                        '<div><b>SPARROW Reach ID: </b>' + responseObj.feature.attributes.MRB_ID + '</div><br>'+
-                                                        '<div><b>Fluxmaster Load' + chartUnits +': </b>' + responseObj.feature.attributes.LOAD_A_600 + '</div><br>' +
-                                                        '<div><b>SPARROW Estimated Load ' + chartUnits +': </b>' + responseObj.feature.attributes.PLOAD_600 + '</div><br>');
-                
-                        var graphic = new Graphic();
-                        var feature = graphic;
-                        responseObj.feature.setInfoTemplate(calibrationTemplateN);
-                        app.map.infoWindow.setFeatures([responseObj.feature]);
-                        app.map.infoWindow.show(evt.mapPoint);
-                        calibrationInfoWindow = true;
-                    
-                    }
-                });
-
-
-                if (calibrationInfoWindow != true){
+            //if in selection mode, highlight shape and add to array of chosen shapes
+            if (app.clickSelectionActive) {
+                $.each(response, function(i, respObj){
+                    //$.each(something.feature, function(i, feature){
+                    var feature = respObj.feature;                                       
+                    var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
+                    selectedSymbol.id = 'zoomHighlight'
+                    feature.setSymbol(selectedSymbol);
+                    app.map.graphics.add(feature);
+                    //add this to an array of responses to pass to the chart
                     var fields = getChartOutfields( app.map.getLayer('SparrowRanking').visibleLayers[0] );
-                    var attributes = response[0].feature.attributes;
+                    var attributes = feature.attributes;
                     var valuePairs = {};
 
                     //need to wrap value in single quotes for ESRI REST Service query.  BUT ONLY IF THE DISPLAY FIELD IS A STRING!
-                    if (response[0].displayFieldName == "MRB_ID"){
-                        var chartQueryArg = response[0].displayFieldName + " = " + response[0].value; 
+                    if (respObj.displayFieldName == "MRB_ID"){
+                        app.userSelectedShapes.push(respObj.value)
                     } else{
-                        var chartQueryArg = response[0].displayFieldName + " = " + "'" + response[0].value + "'"; 
+                        app.userSelectedShapes.push("'" + respObj.value + "'"); 
                     }
+                    //store which displayFieldName they are clicking on
+                    if (app.userSelectedDispFieldName == "") {                        
+                        app.userSelectedDispFieldName = respObj.displayFieldName;
+                    }                    
+                });
+            } else {
+                var calibrationInfoWindow = false;
+                
+                //check response length to make sure a feature was clicked  (handles Layerdefs automatically)
+                if (response.length >= 1){
+                    $.each(response, function(index, responseObj){
+                        //if in selection mode, store, highlight until they are done selecting
+
+                        //Phosphorus Calibration Site InfoWindow
+                        if (responseObj.layerId === 14){
+                            var model = 'Phosphorus';
+                            var calibrationTemplate = new esri.InfoTemplate();
+                            calibrationTemplate.setTitle('SPARROW ' + model + ' Calibration Site');
+                            calibrationTemplate.setContent('<div><b>Station Name:</b> ' + responseObj.feature.attributes.name + '</div><br>' +
+                                                            '<div><b>Station ID:</b> </b>' + responseObj.feature.attributes.staid + '</div><br>' +
+                                                            '<div><b>SPARROW Reach ID: </b>' + responseObj.feature.attributes.MRB_ID + '</div><br>'+
+                                                            '<div><b>Fluxmaster Load' + chartUnits +': </b>' + responseObj.feature.attributes.LOAD_A_665 + '</div><br>' +
+                                                            '<div><b>SPARROW Estimated Load ' + chartUnits +': </b>' + responseObj.feature.attributes.PLOAD_665 + '</div><br>');
                     
-                    $.each(fields, function(index, obj){
-                        console.log(obj.attribute);
+                            var graphic = new Graphic();
+                            var feature = graphic;
+                            responseObj.feature.setInfoTemplate(calibrationTemplate);
+                            app.map.infoWindow.setFeatures([responseObj.feature]);
+                            app.map.infoWindow.show(evt.mapPoint);
+                            calibrationInfoWindow = true;
+                        }
+
+                        //Phosphorus Calibration Site InfoWindow
+                        if (responseObj.layerId === 15){
+                            var modelN = 'Nitrogen';
+                            var calibrationTemplateN = new esri.InfoTemplate();
+                            calibrationTemplateN.setTitle('SPARROW ' + modelN + ' Calibration Site');
+                            calibrationTemplateN.setContent('<div><b>Station Name:</b> ' + responseObj.feature.attributes.name + '</div><br>' +
+                                                            '<div><b>Station ID:</b> </b>' + responseObj.feature.attributes.staid + '</div><br>' +
+                                                            '<div><b>SPARROW Reach ID: </b>' + responseObj.feature.attributes.MRB_ID + '</div><br>'+
+                                                            '<div><b>Fluxmaster Load' + chartUnits +': </b>' + responseObj.feature.attributes.LOAD_A_600 + '</div><br>' +
+                                                            '<div><b>SPARROW Estimated Load ' + chartUnits +': </b>' + responseObj.feature.attributes.PLOAD_600 + '</div><br>');
+                    
+                            var graphic = new Graphic();
+                            var feature = graphic;
+                            responseObj.feature.setInfoTemplate(calibrationTemplateN);
+                            app.map.infoWindow.setFeatures([responseObj.feature]);
+                            app.map.infoWindow.show(evt.mapPoint);
+                            calibrationInfoWindow = true;
+                        
+                        }
                     });
-                    //No infoWindow, just call the chart query
-                    app.createChartQuery(chartQueryArg);
+
+
+                    if (calibrationInfoWindow != true){
+                        var fields = getChartOutfields( app.map.getLayer('SparrowRanking').visibleLayers[0] );
+                        var attributes = response[0].feature.attributes;
+                        var valuePairs = {};
+
+                        //need to wrap value in single quotes for ESRI REST Service query.  BUT ONLY IF THE DISPLAY FIELD IS A STRING!
+                        if (response[0].displayFieldName == "MRB_ID"){
+                            var chartQueryArg = response[0].displayFieldName + " = " + response[0].value; 
+                        } else{
+                            var chartQueryArg = response[0].displayFieldName + " = " + "'" + response[0].value + "'"; 
+                        }
+                        
+                        $.each(fields, function(index, obj){
+                            console.log(obj.attribute);
+                        });
+                        //No infoWindow, just call the chart query
+                        app.createChartQuery(chartQueryArg);
+                    }       
                 }       
-            }         
+            }// end else  
         }); //END deferred callback
+
+        /*function setupArguments() {
+            var fields = getChartOutfields( app.map.getLayer('SparrowRanking').visibleLayers[0] );
+            var attributes = response[0].feature.attributes;
+            var valuePairs = {};
+
+            //need to wrap value in single quotes for ESRI REST Service query.  BUT ONLY IF THE DISPLAY FIELD IS A STRING!
+            if (response[0].displayFieldName == "MRB_ID"){
+                var chartQueryArg = response[0].displayFieldName + " = " + response[0].value; 
+            } else{
+                var chartQueryArg = response[0].displayFieldName + " = " + "'" + response[0].value + "'"; 
+            }
+            
+            $.each(fields, function(index, obj){
+                console.log(obj.attribute);
+            });
+        }*/
     } //END executeIdentifyTask();
 
     
@@ -1216,8 +1266,12 @@ require([
             $('#chartWindowPanelTitle').text('Nitrogen ' + labelySelect() );
         }
         
-        if (response.features.length <= 1){
+        if (response.features.length <= 1 || app.customChartClicked){
             $('#chartWindowPanelTitle').append('<br/><div class="btn"><button type="button" class="btn btn-primary" id="popupChartButton"><span class="glyphicon glyphicon-signal"></span> Show Full Chart</button></div>');
+            //if coming from custom chart button click
+            if (app.customChartClicked) {
+                app.customChartClicked = false;                
+            }
         }
 
         //$('#chartWindowPanelTitle').append('<br/><div class="btn"><button type="button" class="btn btn-primary" id="exportButton"><span class="glyphicon glyphicon-signal"></span> Export Chart Data</button></div>');
@@ -1231,6 +1285,7 @@ require([
 
         //moved this out of exectureIdentifyTask()
         $('#popupChartButton').on('click', function(){
+            app.map.graphics.clear();
             app.createChartQuery();
         });
         var instance = $('#chartWindowDiv').data('lobiPanel');
