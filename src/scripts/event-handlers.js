@@ -243,8 +243,7 @@ function loadEventHandlers() {
                 $("#grp2-select").attr('disabled', 'disabled'); //huc8       
                 $("#grp2-select").addClass('disabled');
                 $('#grp2-select').selectpicker('refresh');
-                break;
-
+                
                 //AOI logic HUC8(GP3) AND Main River basin(GP1) enabled   
                 $("#grp1-select").removeClass('disabled'); //Main Riv. Basin               
                 $("#grp1-select").removeAttr('disabled'); 
@@ -273,6 +272,12 @@ function loadEventHandlers() {
                 $("#grp3-select").attr('disabled', 'disabled');//huc8
                 $("#grp3-select").addClass('disabled');
                 $('#grp3-select').selectpicker('refresh');
+
+                //endable Tributary (in case it was previously disabled)
+                $("#grp2-select").removeClass('disabled'); //Tributary
+                $("#grp2-select").removeAttr('disabled'); 
+                $(".grp2-warning").remove();
+                $('#grp2-select').selectpicker('refresh');
                 
                 //endable Main River Basin (in case it was previously disabled)
                 $("#grp1-select").removeClass('disabled'); //Main River Basin               
