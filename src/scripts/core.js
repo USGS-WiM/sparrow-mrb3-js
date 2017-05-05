@@ -1453,6 +1453,7 @@ require([
                     text: null
                 },
                 exporting:{
+                    enabled: true,
                     buttons:{
                         contextButton:{
                             text: "Chart Options",
