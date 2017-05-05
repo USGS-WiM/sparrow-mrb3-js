@@ -1353,19 +1353,26 @@ require([
                                 switch (selectedIndex){
                                     case 0:
                                         if( $('#st-select')[0].selectedIndex > 0){
+                                            return 'MRB_ID';
+                                        }else{
+                                            return 'MRB_ID';
+                                        }
+                                        break;
+                                    case 1:
+                                        if( $('#st-select')[0].selectedIndex > 0){
                                             return 'SG3';
                                         }else{
                                             return 'GP3';
                                         }
                                         break;
-                                    case 1:
+                                    case 2:
                                         if( $('#st-select')[0].selectedIndex > 0){
                                             return 'SG2';
                                         }else{
                                             return 'GP2';
                                         }
                                         break;
-                                    case 2: 
+                                    case 3: 
                                         if( $('#st-select')[0].selectedIndex > 0){
                                             return 'SG1';
                                         }else{
@@ -1373,8 +1380,7 @@ require([
                                         }
                                         break;
                                         
-
-                                    case 3:
+                                    case 4:
                                         return 'ST';
                                         break;
                                 }
