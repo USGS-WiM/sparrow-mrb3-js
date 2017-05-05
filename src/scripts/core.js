@@ -89,6 +89,7 @@ require([
     app.userSelectedShapes = []; 
     app.customChartClicked = false; // when custom chart button clicked, need to let the chart know to show 'Show Full Chart' button
     app.shiftKey = false; // store if they are selecting (click) or unselecting (shift+click)
+    app.formattedHighlightString; // from custom defined chart click, store first view in case they zoom in and want to reset back to this
 
     /* values come from config file */
     app.defaultMapCenter = mapCenter;
@@ -968,7 +969,7 @@ require([
     }
 
 
-    function showChart(response){        
+    function showChart(response){               
         var columnLabels = [];
         var chartTitle;
         var categories = [];
@@ -1290,6 +1291,7 @@ require([
 
         //moved this out of exectureIdentifyTask()
         $('#popupChartButton').on('click', function(){
+            app.formattedHighlightString = "";
             app.map.graphics.clear();
             app.createChartQuery();
         });
@@ -1307,6 +1309,7 @@ require([
 
         $('#chartClose').on('click', function(){
             app.map.graphics.clear();
+            app.formattedHighlightString = "";
             $('#chartWindowDiv').css('visibility', 'hidden');
             $('#chartWindowContainer').empty();
             $('#chartWindowPanelTitle').empty();
@@ -1410,31 +1413,26 @@ require([
 
                             app.map.graphics.clear();
 
-                            if (e.resetSelection != true){
+                            var queryTask;
+                            var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
+                            var URL = app.map.getLayer('SparrowRanking').url;
+                            var fieldName = switchWhereField( $('#groupResultsSelect')[0].selectedIndex );
+                            queryTask = new esri.tasks.QueryTask(URL + visibleLayers.toString() );
+                            var graphicsQuery = new esri.tasks.Query();
+                            graphicsQuery.returnGeometry = true; //important!
+                            graphicsQuery.outSpatialReference = app.map.spatialReference;  //important!
+                            graphicsQuery.outFields = [fieldName];
 
+                            if (e.resetSelection != true) {                                 
                                 var categoryStr = "";
                                 $.each(categoryArr, function(i, category){
                                     categoryStr += "'" + category + "', "
                                 });  
-                                var queryStr = categoryStr.slice(0, categoryStr.length - 2);
-                                var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
-                                var URL = app.map.getLayer('SparrowRanking').url;
-                                var fieldName = switchWhereField( $('#groupResultsSelect')[0].selectedIndex );
-
-                                var queryTask;
-                                queryTask = new esri.tasks.QueryTask(URL + visibleLayers.toString() );
-
-                                var graphicsQuery = new esri.tasks.Query();
-                                graphicsQuery.returnGeometry = true; //important!
-                                graphicsQuery.outSpatialReference = app.map.spatialReference;  //important!
-                                graphicsQuery.outFields = [fieldName];
+                                var queryStr = categoryStr.slice(0, categoryStr.length - 2);                                
                                 graphicsQuery.where = fieldName + " IN (" + queryStr + ")";
-
-                                                                    
                                 queryTask.execute(graphicsQuery, responseHandler);
 
                                 function responseHandler(response){
-
                                     $.each(app.map.graphics.graphics, function(i, obj){
                                         if (obj.symbol.id == 'zoomhighlight'){
                                             app.map.graphics.remove(obj);
@@ -1452,6 +1450,27 @@ require([
                                     
                                 }
                             } else {
+                                if (app.formattedHighlightString) {
+                                    // this is a reset from a zoom in on a custom defined chart view                                   
+                                    graphicsQuery.where = app.formattedHighlightString;     
+                                    queryTask.execute(graphicsQuery, responseHandler);
+
+                                    function responseHandler(response){
+                                        $.each(app.map.graphics.graphics, function(i, obj){
+                                            if (obj.symbol.id == 'zoomhighlight'){
+                                                app.map.graphics.remove(obj);
+                                            }
+                                        });
+                                        //var feature, selectedSymbol;
+                                        $.each(response.features, function(i, feature){
+                                            var feature = feature;                                       
+                                            var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
+                                            selectedSymbol.id = 'zoomHighlight'
+                                            feature.setSymbol(selectedSymbol);
+                                            app.map.graphics.add(feature);
+                                        });                                        
+                                    }
+                                }
                                 filterTable();
                             }
                         }
@@ -1678,7 +1697,7 @@ require([
                                     var queryField = switchWhereField( $('#groupResultsSelect')[0].selectedIndex );
                                     var queryString = queryField + " = " + "'" + this.category + "'";
 
-                                    if (fieldName != "MRB_ID"){
+                                    if (queryField != "MRB_ID"){
                                         var queryString = queryField + " = " + "'" + this.category + "'";
                                     }else {
                                         //MRB_ID field is NOT a string!!!
@@ -1898,7 +1917,7 @@ require([
         function responseHandler(response){
             //remove only the mouseover graphic
             $.each(app.map.graphics.graphics, function(i, graphic){
-                if (graphic.symbol.id == undefined || graphic.symbol.id !== "zoomHighlight"){
+                if (graphic.symbol.id == undefined) { 
                     app.map.graphics.remove(graphic);
                 }
             });
