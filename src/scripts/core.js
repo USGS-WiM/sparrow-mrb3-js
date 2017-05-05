@@ -88,6 +88,7 @@ require([
     app.userSelectedDispFieldName = ""; // holder of which DisplayFieldName they are clicking
     app.userSelectedShapes = []; 
     app.customChartClicked = false; // when custom chart button clicked, need to let the chart know to show 'Show Full Chart' button
+    app.shiftKey = false; // store if they are selecting (click) or unselecting (shift+click)
 
     /* values come from config file */
     app.defaultMapCenter = mapCenter;
@@ -567,6 +568,7 @@ require([
     };
 
     app.executeIdentifyTask = function(evt){
+        app.shiftKey = evt.shiftKey;
         console.log(evt);
         var sparrowLayer = app.map.getLayer('SparrowRanking').visibleLayers[0];
 
@@ -592,15 +594,20 @@ require([
         
         //Deferred callback
         var deferred = app.identifyTask.execute(app.identifyParams).addCallback(function(response){
-            //if in selection mode, highlight shape and add to array of chosen shapes
-            if (app.clickSelectionActive) {
+            //if in selection mode and not unselecting, highlight shape and add to array of chosen shapes
+            if (app.clickSelectionActive) {                
                 $.each(response, function(i, respObj){
                     //$.each(something.feature, function(i, feature){
-                    var feature = respObj.feature;                                       
-                    var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
-                    selectedSymbol.id = 'zoomHighlight'
-                    feature.setSymbol(selectedSymbol);
-                    app.map.graphics.add(feature);
+                    var feature = respObj.feature;                         
+                    if (!app.shiftKey) {
+                        var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
+                        selectedSymbol.id = respObj.value;
+                        feature.setSymbol(selectedSymbol);
+                        app.map.graphics.add(feature);
+                    } else {
+                        var symbolToRemove = app.map.graphics.graphics.filter(function (g) { return g.symbol.id == respObj.value})[0];
+                        app.map.graphics.remove(symbolToRemove);
+                    }
                     //add this to an array of responses to pass to the chart
                     var fields = getChartOutfields( app.map.getLayer('SparrowRanking').visibleLayers[0] );
                     var attributes = feature.attributes;
