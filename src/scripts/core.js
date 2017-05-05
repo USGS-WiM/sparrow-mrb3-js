@@ -598,30 +598,28 @@ require([
             if (app.clickSelectionActive) {                
                 $.each(response, function(i, respObj){
                     //$.each(something.feature, function(i, feature){
-                    var feature = respObj.feature;                         
+                    var feature = respObj.feature;
+                    var respValue = respObj.displayFieldName == "MRB_ID" ? respObj.value : "'" + respObj.value + "'";
+
                     if (!app.shiftKey) {
+                        //adding
                         var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
                         selectedSymbol.id = respObj.value;
                         feature.setSymbol(selectedSymbol);
                         app.map.graphics.add(feature);
+                        
+                        //add this to an array of responses to pass to the chart
+                        app.userSelectedShapes.push(respValue); 
+                        //store which displayFieldName they are clicking on (only once)
+                        if (app.userSelectedDispFieldName == "") {                        
+                            app.userSelectedDispFieldName = respObj.displayFieldName;
+                        }                    
                     } else {
+                        //removing
                         var symbolToRemove = app.map.graphics.graphics.filter(function (g) { return g.symbol.id == respObj.value})[0];
                         app.map.graphics.remove(symbolToRemove);
-                    }
-                    //add this to an array of responses to pass to the chart
-                    var fields = getChartOutfields( app.map.getLayer('SparrowRanking').visibleLayers[0] );
-                    var attributes = feature.attributes;
-                    var valuePairs = {};
-
-                    //need to wrap value in single quotes for ESRI REST Service query.  BUT ONLY IF THE DISPLAY FIELD IS A STRING!
-                    if (respObj.displayFieldName == "MRB_ID"){
-                        app.userSelectedShapes.push(respObj.value)
-                    } else{
-                        app.userSelectedShapes.push("'" + respObj.value + "'"); 
-                    }
-                    //store which displayFieldName they are clicking on
-                    if (app.userSelectedDispFieldName == "") {                        
-                        app.userSelectedDispFieldName = respObj.displayFieldName;
+                        //remove this from array of responses
+                        app.userSelectedShapes.splice(app.userSelectedShapes.indexOf(respValue), 1);                        
                     }                    
                 });
             } else {
@@ -1621,7 +1619,7 @@ require([
                                     function responseHandler(response){
                                         //remove only the mouseover graphic
                                         $.each(app.map.graphics.graphics, function(i, graphic){
-                                            if (graphic.symbol.id == undefined || graphic.symbol.id !== "zoomHighlight"){
+                                            if (graphic.symbol.id == undefined){// || graphic.symbol.id !== "zoomHighlight"){
                                                 app.map.graphics.remove(graphic);
                                             }
                                         });
