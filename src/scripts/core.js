@@ -1394,6 +1394,8 @@ require([
                                     $.each(this.series, function (i, series) {
                                         $.each(series.points, function (j, point) {
 
+                                            //app.previousChartValues.push(point.category);
+
                                             //find data inside max/min selected axes
                                             if ( point.x >= xAxis.min && point.x <= xAxis.max ) {
                                                 //check if point.category is already in the array, if not add it
