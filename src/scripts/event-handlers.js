@@ -397,12 +397,13 @@ function loadEventHandlers() {
 
     //displays map scale on map load
     app.map.on('load', function (){
-
+        
         app.initMapScale();
         app.map.infoWindow.set('highlight', false);
         app.map.infoWindow.set('titleInBody', false);
 
         app.setupDraggableInfoWindow();
+        app.map.disableClickRecenter();
     });
 
     //displays map scale on scale change (i.e. zoom level)
