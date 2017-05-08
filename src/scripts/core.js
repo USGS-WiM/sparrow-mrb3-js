@@ -601,13 +601,13 @@ require([
                     //$.each(something.feature, function(i, feature){
                     var feature = respObj.feature;
                     var respValue = respObj.displayFieldName == "MRB_ID" ? respObj.value : "'" + respObj.value + "'";
-
+                    
                     if (!app.shiftKey) {
                         //adding
                         var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
                         selectedSymbol.id = respObj.value;
                         feature.setSymbol(selectedSymbol);
-                        app.map.graphics.add(feature);
+                        app.map.graphics.add(feature); 
                         
                         //add this to an array of responses to pass to the chart
                         app.userSelectedShapes.push(respValue); 
@@ -629,7 +629,11 @@ require([
                 //check response length to make sure a feature was clicked  (handles Layerdefs automatically)
                 if (response.length >= 1){
                     $.each(response, function(index, responseObj){
-                        //if in selection mode, store, highlight until they are done selecting
+                        // highlight
+                        var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
+                        selectedSymbol.id = responseObj.value;
+                        responseObj.feature.setSymbol(selectedSymbol);
+                        app.map.graphics.add(responseObj.feature);
 
                         //Phosphorus Calibration Site InfoWindow
                         if (responseObj.layerId === 14){
@@ -1761,23 +1765,28 @@ require([
     function filterTable(categories){
         if (categories !== undefined){
             var whichName = "";
-            switch($('#groupResultsSelect')[0].selectedIndex){
+            switch ($('#groupResultsSelect')[0].selectedIndex){
                 case 0:
-                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP3_NAM';
-                    else whichName = 'GRP_3_NAM';
+                    // UPDATE when split catchments are available
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'MRB_ID';
+                    else whichName = 'MRB_ID';
                     break;
                 case 1:
-                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP2_NAM';
-                    else whichName = 'GRP_2_NAM';
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'SG3';
+                    else whichName = 'GP3';
                     break;
-                case 2: 
-                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'ST_GP1_NAM';
-                    else whichName = 'GRP_1_NAM';
-                    break;           
-                case 3:
+                case 2:
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'SG2';
+                    else fieldName = 'GP2';
+                    break;
+                case 3: 
+                    if( $('#st-select')[0].selectedIndex > 0) whichName = 'SG1';
+                    else whichName = 'GP1';                
+                    break;
+                case 4:
                     whichName = 'ST';
                     break;
-            }      
+            }
             var newResponse = [];
             $.each(categories, function(i,c){
                 newResponse.push(tableArr.filter(function(t){return t[whichName] == c;})[0]);
