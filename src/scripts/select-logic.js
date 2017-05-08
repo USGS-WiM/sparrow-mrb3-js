@@ -230,7 +230,7 @@ function AOIChange(e){
 
     setLayerDefs();    
 
-    //generateRenderer();
+    generateRenderer();
 
     if( $("#chartWindowDiv").css("visibility") == "visible" ) {
         app.map.graphics.clear();
@@ -296,7 +296,7 @@ function setLayerDefs(){
         //LayerDefs on ALL Layers
         /***TODO UPDATE IMPORTANT -- note that not all of these layer combinations are going to work with the attributes we have currently.  Some layer defs will not set because the fields don't exist***/
         layerDefs[0] = definitionString; //contains ST, GP1, GP2, GP3, SG1, SG2, SG3
-        layerDefs[1] = definitionString; //contains GP3, GP1;       NO GP2/Tributary
+        /*layerDefs[1] = definitionString; //contains GP3, GP1;       NO GP2/Tributary
         layerDefs[2] = definitionString; //contains GP2, GP1;       NO GP3/HUC8
         layerDefs[3] = definitionString; //contains GP1 ONLY;
         layerDefs[4] = definitionString; //contains ST ONLY;
