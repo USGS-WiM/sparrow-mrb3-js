@@ -625,16 +625,16 @@ require([
                 });
             } else {
                 var calibrationInfoWindow = false;
-                
+                app.map.graphics.clear();
                 //check response length to make sure a feature was clicked  (handles Layerdefs automatically)
-                if (response.length >= 1){
+                if (response.length >= 1) {
+                    // highlight the first one clicked
+                    var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
+                    selectedSymbol.id = response[0].value;
+                    response[0].feature.setSymbol(selectedSymbol);
+                    app.map.graphics.add(response[0].feature);
+                    
                     $.each(response, function(index, responseObj){
-                        // highlight
-                        var selectedSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 1);
-                        selectedSymbol.id = responseObj.value;
-                        responseObj.feature.setSymbol(selectedSymbol);
-                        app.map.graphics.add(responseObj.feature);
-
                         //Phosphorus Calibration Site InfoWindow
                         if (responseObj.layerId === 14){
                             var model = 'Phosphorus';

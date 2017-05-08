@@ -306,11 +306,11 @@
                     <li role="presentation" class="active"><a id="searchTab" href="#searchTabPane" data-toggle="tab"><i class="fa fa-search"></i>&nbsp;Search, Zoom</a></li>
                     <li role="presentation"><a id="iconTab" href="#iconTabPane" data-toggle="tab"><i class="fa fa-list"></i>&nbsp;Explanation</a></li>
                     <li role="presentation"><a id="layersTab" href="#layersTabPane" data-toggle="tab"><i class="fa fa-map"></i>&nbsp;Map selection options</a></li>                    
-                    <li role="presentation"><a id="chartTab" href="#chartTabPane" data-toggle="tab"><i class="fa fa-map"></i>&nbsp;Chart, Polygon selection</a></li>
+                    <li role="presentation"><a id="chartTab" href="#chartTabPane" data-toggle="tab"><i class="fa fa-map"></i>&nbsp;Data Display</a></li>
                 </ul>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="searchTabPane">
-                        <span class="user-guide-header">Search, and zoom capabilities</span>
+                        <span class="user-guide-header">Show Chart, and Custom Selection</span>
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/search.png"/></div>
                             <p><b>Searching</b>In addition to city, state, zip code, or general place names, USGS gaging stations and Hydrologic Unit Codes (HUCs) are also searchable.</p>
@@ -325,15 +325,7 @@
                         </div>
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/mappoints.png"/></div>
-                            <p><b>Opening a chart</b>Clicking on a nutrient model feature will generate a chart showing the individual sources for the selected feature.  The chart also contains a button to switch to a chart of all features currently displayed.</p>
-                        </div>
-                        <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/chart.png"/></div>
-                            <p><b>Chart features</b>Clicking on a the chart legend will toggle individual sources on and off.  Mouse over a bar to see its corresponding map feature as well as the exact value for each source.  Dragging within the chart area allows the user to select and magnify specific segments of the chart.  The selected features are also highlighted on the map.  The Chart Options button contains options to download the chart data as well as toggle the background transparency.</p>
-                        </div>
-                        <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/siteinfo.png"/></div>
-                            <p><b>Moving chart window</b>The chart window can be repositioned to view underlying map information.</p>
+                            <p><b>Opening a chart</b>Clicking on a nutrient model feature will generate a chart showing the individual sources for the selected feature.  The chart also contains a button to switch to a chart of all features currently displayed. (For more on the Chart features, see Data Display)</p>
                         </div>
                         <!--<div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/faq.png"/></div>
@@ -392,12 +384,23 @@
                     <div role="tabpanel" class="tab-pane active" id="chartTabPane">
                         <span class="user-guide-header">Chart, and polygon selection capabilities</span>
                         <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/search.png"/></div>
-                            <p><b>Searching</b>In addition to city, state, zip code, or general place names, USGS gaging stations and Hydrologic Unit Codes (HUCs) are also searchable.</p>
+                            <div class="user-guide-item-image" style="height:200px;"><img src="images/userguide/dataDisplay.png"/></div>
+                            <p><b>Data Display Options</b>Once the Display Filters have been chosen, there are several ways to display data about the polygons of interest in the Data Display settings.</p>
+                        </div>
+
+                        <div class="user-guide-item">
+                            <div class="user-guide-item-image"><img src="images/userguide/chart.png"/></div>
+                            <p><b>Chart features</b>Clicking on a the chart legend will toggle individual sources on and off.  Mouse over a bar to see its corresponding map feature as well as the exact value for each source.  Dragging within the chart area allows the user to select and magnify specific segments of the chart.  The selected features are also highlighted on the map.  The Chart Options button contains options to download the chart data as well as toggle the background transparency.</p>
                         </div>
                         <div class="user-guide-item">
+                            <div class="user-guide-item-image"><img src="images/userguide/siteinfo.png"/></div>
+                            <p><b>Moving chart window</b>The chart window can be repositioned to view underlying map information.</p>
+                        </div>
+
+
+                        <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/zoom.png"/></div>
-                            <p><b>Navigating the map</b>The scroll wheel on the mouse can be used to zoom, and in the upper left area of the tool are "+" and "&#45;" icons to zoom in and out, respectively.</p>
+                            <p><b>Show Chart</b>The Show Chart button will display a chart and table for the full layer visible in the map.</p>
                         </div>
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/home.png"/></div>
