@@ -306,11 +306,11 @@
                     <li role="presentation" class="active"><a id="searchTab" href="#searchTabPane" data-toggle="tab"><i class="fa fa-search"></i>&nbsp;Search, Zoom</a></li>
                     <li role="presentation"><a id="iconTab" href="#iconTabPane" data-toggle="tab"><i class="fa fa-list"></i>&nbsp;Explanation</a></li>
                     <li role="presentation"><a id="layersTab" href="#layersTabPane" data-toggle="tab"><i class="fa fa-map"></i>&nbsp;Map selection options</a></li>                    
-                    <li role="presentation"><a id="chartTab" href="#chartTabPane" data-toggle="tab"><i class="fa fa-map"></i>&nbsp;Data Display</a></li>
+                    <li role="presentation"><a id="chartTab" href="#chartInfoTabPane" data-toggle="tab"><i class="fa fa-map"></i>&nbsp;Data Display</a></li>
                 </ul>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="searchTabPane">
-                        <span class="user-guide-header">Show Chart, and Custom Selection</span>
+                        <span class="user-guide-header">Search, and zoom capabilities</span>
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/search.png"/></div>
                             <p><b>Searching</b>In addition to city, state, zip code, or general place names, USGS gaging stations and Hydrologic Unit Codes (HUCs) are also searchable.</p>
@@ -326,11 +326,7 @@
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/mappoints.png"/></div>
                             <p><b>Opening a chart</b>Clicking on a nutrient model feature will generate a chart showing the individual sources for the selected feature.  The chart also contains a button to switch to a chart of all features currently displayed. (For more on the Chart features, see Data Display)</p>
-                        </div>
-                        <!--<div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/faq.png"/></div>
-                            <p><b>More site details</b>Additional details about the graphs are available in the FAQs. Additional details about the column headers in the table are available by hovering on the help button for each column header.</p>
-                        </div>-->
+                        </div>                        
                     </div>
                     <div role="tabpanel" class="tab-pane" id="iconTabPane">
                         <span class="user-guide-header">Explanation</span>
@@ -341,18 +337,7 @@
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/legendfull.png"/></div>
                             <p><b>Using the Explanation</b>The expanded Explanation box contains a legend for the currently selected Nutrient Model Results.  The legend displays class breaks and values for the model results currently visible on the map, and updates dynamically with any change in mapped area.</p>
-                        </div>
-                        <!--<p>
-                          A likelihood-based approach is used to report these trend results. When the trend is "likely up" or "likely down", the trend likelihood value associated with the trend is between 0.85 and 1.0 -- in other words, the chance of the trend occurring in the specified direction is at least an 85 out of 100. When the trend is "somewhat likely up" or "somewhat likely down", the trend likelihood value associated with the trend is between 0.7 and 0.85 -- in other words, the chance of the trend occurring in the specified direction is between 70 and 85 out of 100. When the trend is "about as likely as not", the trend likelihood value associated with the trend is less than 0.7 -- in other words, the chance of the trend being either upward or downward is less than 70 out of 100.
-                        </p>
-
-                        <p>
-                          This likelihood-based approach is used as an alternative to the null-hypothesis significance testing (NHST) approach that is often used when reporting water-quality trends. The likelihood-based approach gives people more intuitive information on the certainty of a trend estimate, and provides more evidence of a growing problem or initial clean-up successes. Consider an example where the chance of an upward trend in nitrate concentrations at a site is 80 out of 100 (a trend likelihood value of 0.80). Using the NHST approach and a traditional alpha value of either 0.05 or 0.1, the trend would be reported as nonsignificant. Using the likelihood-based approach, the trend would be reported instead as "somewhat likely up". The NHST approach could lead to a false sense of security because it indicates that there isn't strong proof of a growing problem. The likelihood-based approach indicates instead that it is somewhat likely conditions in the stream are not improving, giving people more information to use when making decisions about watershed management.
-                        </p>
-
-                        <p>
-                          For more information on the philosophy of the likelihood-based approach, please see Hirsch and others (2015), "A bootstrap method for estimating uncertainty of water quality trends", at <a href="http://dx.doi.org/10.1016/j.envsoft.2015.07.017" target="_blank">http://dx.doi.org/10.1016/j.envsoft.2015.07.017</a>. Trend likelihood values for nutrients, sediment, salinity, major ions, and carbon were determined using the bootstrap approach in that same report. Trend likelihood values for pesticides and aquatic ecology metrics were determined using the p-value reported from their respective trend tests, using the equation 1-(p-value/2). See Vecchia and others (2008), "Modeling Variability and Trends in Pesticide Concentrations in Streams", at <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1752-1688.2008.00225.x/pdf" target="_blank">http://onlinelibrary.wiley.com/doi/10.1111/j.1752-1688.2008.00225.x/pdf</a> for more information on calculating p-values in the pesticide models. See Oelsner, G.P., Sprague, L.A., Murphy, J.C., Zuellig, R.E., Johnson, H.M., Ryberg, K.R., Falcone, J.A., Stets, E.G., Vecchia, A.V., Riskin, M.L., De Cicco, L.A., Mills, T.J., and Farmer, W.H., 2017, Water- Quality Trends in the Nation's Rivers and Streams 1972-2012-Data Preparation, Statistical Methods, and Trend Results: U.S. Geological Survey Scientific Investigations Report 2017-5006, in press. for more information on calculating p-values in the ecology models.
-                        </p>-->
+                        </div>                        
                     </div>
                     <div role="tabpanel" class="tab-pane" id="layersTabPane">
                         <span class="user-guide-header">Map selection options</span>
@@ -375,14 +360,10 @@
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/metricgrouping.png"/></div>
                             <p><b>Selecting a Displayed Metric and Group Results By</b>Yields and loads can be viewed by making changes to the Displayed Metric dropdown.  The area of aggregation is controlled by the Group Results dropdown.</p>
-                        </div>
-                        <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/charttable.png"/></div>
-                            <p><b>Show Chart, Show Table</b>Clicking these buttons will generate a chart or table for all of the features displayed on the map.  Charts and Tables can also be exported and downloaded.</p>
-                        </div>
+                        </div>                       
                     </div>
-                    <div role="tabpanel" class="tab-pane active" id="chartTabPane">
-                        <span class="user-guide-header">Chart, and polygon selection capabilities</span>
+                    <div role="tabpanel" class="tab-pane active" id="chartInfoTabPane">
+                        <span class="user-guide-header">Polygon selection capabilities, Chart, and Table</span>
                         <div class="user-guide-item">
                             <div class="user-guide-item-image" style="height:200px;"><img src="images/userguide/dataDisplay.png"/></div>
                             <p><b>Data Display Options</b>Once the Display Filters have been chosen, there are several ways to display data about the polygons of interest in the Data Display settings.</p>
@@ -390,38 +371,30 @@
 
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/chart.png"/></div>
-                            <p><b>Chart features</b>Clicking on a the chart legend will toggle individual sources on and off.  Mouse over a bar to see its corresponding map feature as well as the exact value for each source.  Dragging within the chart area allows the user to select and magnify specific segments of the chart.  The selected features are also highlighted on the map.  The Chart Options button contains options to download the chart data as well as toggle the background transparency.</p>
+                            <p><b>Show Chart</b>Clicking the Show Chart button will show a window with two tabs; Chart and Table. This window can be repositioned to view underlying map information.
+                                The Chart tab shows a chart for the full layer visible in the map based on the filters chosen in the Data Filters section.  
+                                Clicking on a the chart legend items will toggle individual sources on and off, as well as recalculating the y-axis range.
+                                Mouse over a bar to see its corresponding map feature as well as the exact value for each source. 
+                            </p>
                         </div>
                         <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/siteinfo.png"/></div>
-                            <p><b>Moving chart window</b>The chart window can be repositioned to view underlying map information.</p>
-                        </div>
-
-
-                        <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/zoom.png"/></div>
-                            <p><b>Show Chart</b>The Show Chart button will display a chart and table for the full layer visible in the map.</p>
+                            <div class="user-guide-item-image"><img src="images/userguide/selectedChartSegment.png"/></div>
+                            <p><b>Selected Chart Segment</b>To see a magnified segment of the chart, click+drag over the chart bars. 
+                             The selected features are highlighted on the map. Moving the mouse over the chart bars will give the values for each source as well as show an 
+                             additional highlight to the cooresponding map feature. To return to the previous chart view, click the Reset zoom button in the top right of the chart window.
+                            </p>
                         </div>
                         <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/home.png"/></div>
-                            <p><b>Home Location</b>The crosshair button will zoom the map to your location, and the home button will center the US on the map.</p>
+                            <div class="user-guide-item-image"><img src="images/userguide/chartOptions.png"/></div>
+                            <p><b>Chart Options</b>The Chart Options button contains options to download the chart data as a csv file or xls file, and change background transparency. 
+                            Clicking Change background transparency will toggle the background transparency between transparent and not transparent.
+                            </p>
                         </div>
                         <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/mappoints.png"/></div>
-                            <p><b>Opening a chart</b>Clicking on a nutrient model feature will generate a chart showing the individual sources for the selected feature.  The chart also contains a button to switch to a chart of all features currently displayed.</p>
+                            <div class="user-guide-item-image"><img src="images/userguide/tabletab.png"/></div>
+                            <p><b>Table</b>The Table tab shows a tabular representation of the chart information on the Chart tab. The table can be sorted by any column. Moving the mouse over any table 
+                            row will highlight that map feature on the map. Any zooming or resetting on the Chart tab will update the Table tab's contents.</p>
                         </div>
-                        <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/chart.png"/></div>
-                            <p><b>Chart features</b>Clicking on a the chart legend will toggle individual sources on and off.  Mouse over a bar to see its corresponding map feature as well as the exact value for each source.  Dragging within the chart area allows the user to select and magnify specific segments of the chart.  The selected features are also highlighted on the map.  The Chart Options button contains options to download the chart data as well as toggle the background transparency.</p>
-                        </div>
-                        <div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/siteinfo.png"/></div>
-                            <p><b>Moving chart window</b>The chart window can be repositioned to view underlying map information.</p>
-                        </div>
-                        <!--<div class="user-guide-item">
-                            <div class="user-guide-item-image"><img src="images/userguide/faq.png"/></div>
-                            <p><b>More site details</b>Additional details about the graphs are available in the FAQs. Additional details about the column headers in the table are available by hovering on the help button for each column header.</p>
-                        </div>-->
                     </div>
                 </div>
             </div>
