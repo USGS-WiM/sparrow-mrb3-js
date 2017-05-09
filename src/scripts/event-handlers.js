@@ -75,13 +75,14 @@ function loadEventHandlers() {
             selectPolygons.html('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Select');
             app.map.setMapCursor("auto");
             app.clickSelectionActive = false;
-            showCustomChart.prop("disabled",false);
+            //showCustomChart.prop("disabled",false);
+            $("#chartButton").prop("disabled",false);
         } else if (!app.clickSelectionActive) {
             $('#customSelect').append('<div id="shiftNote" style="padding-left: 1em;color: orangered;">Shift+Click to Deselect</div>');
             selectPolygons.addClass("active");
             selectPolygons.html('<i class="glyphicon glyphicon-stop"></i>&nbsp;&nbsp;Stop selecting');
             app.map.setMapCursor("crosshair");
-            showCustomChart.prop("disabled",true);
+            $("#chartButton").prop("disabled",true);
             app.clickSelectionActive = true;
         }
     });
@@ -380,7 +381,17 @@ function loadEventHandlers() {
     /* SHOW CHART BUTTON CLICK */
    $("#chartButton").on("click", function(){
         //set up the Chart chain of events
-        app.createChartQuery();  
+        //check to see if custom click was performed
+        if (app.userSelectedDispFieldName != "") { 
+            app.formattedHighlightString = app.userSelectedDispFieldName + " IN (" + app.userSelectedShapes.join(",") + ")";
+            app.customChartClicked = true;
+            console.log("Custom Click: " + app.formattedHighlightString);
+            app.createChartQuery(app.formattedHighlightString);
+            app.userSelectedDispFieldName = "";
+            app.userSelectedShapes = [];
+        } else {
+            app.createChartQuery();  
+        }
     });
 
     //following block forces map size to override problems with default behavior

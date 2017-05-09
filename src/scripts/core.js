@@ -300,6 +300,7 @@ require([
     } 
 
     app.updateAOIs = function(selectedId){
+        // for four AOI options
         var filteredAOIOptions = [];
 
         var grp3Options = [];
@@ -365,7 +366,7 @@ require([
 
                 //get unique group2 and group3 values
                 grp2Options = getUniqueArray(filteredAOIOptions, 'GP2');
-                grp3Options = getUniqueArray(filteredAOIOptions, 'GP3');
+                grp3Options = getUniqueArray(filteredAOIOptions, 'GP3')
                 
                 //set other two AOI options and reselect if previously selected
                 appendSelectOptions(grp2Options, '#grp2-select', 'AOI2', grp3Options, '#grp3-select', 'AOI3');
@@ -588,7 +589,7 @@ require([
     };
     //function used several times in above switch case
     var appendSelectOptions = function(firstOptions, select1_ID, firstAOI, secondOptions, select2_ID, secondAOI){
-        //set the filtered state options
+        //set the filtered state options 
         $.each(firstOptions, function(index, option){
             $(select1_ID).append(new Option(option));                     
         });
@@ -1631,9 +1632,9 @@ require([
                     borderWidth: 1,
                     shadow: false,                    
                     labelFormatter: function () {
-                        var yI = this.name.indexOf("yield");
+                        var yI = this.name.indexOf(")");//yield");
                         var shortName = "";
-                        if (yI > -1) shortName = this.name.substring(0, yI-1);
+                        if (yI > -1) shortName = this.name.substring(yI+1);//0, yI-1);
                         else shortName = this.name;
                         return shortName;// this.name + ' (click to hide)';
                     }
@@ -1868,9 +1869,9 @@ require([
         $('#resultsTable').append('<thead></thead>');
         
         $.each(headers, function(h,head){
-            var yI = head.indexOf("yield");
+            var yI = head.indexOf(")");//yield");
             var shortHeader = "";
-            if (yI > -1) shortHeader = head.substring(0,yI-1);
+            if (yI > -1) shortHeader = head.substring(yI+1);//0,yI-1);
             else shortHeader = head;
             headerKeyArr.push(shortHeader);
         });        
@@ -1911,22 +1912,12 @@ require([
         $('.tablesorter').tablesorter({
             widthFixed: true,
             onRenderHeader: function(){
-                if (this.context.innerText.trim() == "Soil-parent-rock")
-                    this.append('<div style="background:#0070C0;height: 3px;margin-bottom:2px;"></div>');
-                else if (this.context.innerText.trim() == "Mined-land")
-                    this.append('<div style="background:#97DA7C;height: 3px;margin-bottom:2px;"></div>');
-                else if (this.context.innerText.trim() == "Manure")
-                    this.append('<div style="background:#663100;height: 3px;margin-bottom:2px;"></div>');
-                else if (this.context.innerText.trim() == "Agricultural-land")
-                    this.append('<div style="background:#FFEC99;height: 3px;margin-bottom:2px;"></div>');
-                else if (this.context.innerText.trim() == "Urban-land")
-                    this.append('<div style="background:#FFCCFF;height: 3px;margin-bottom:2px;"></div>');
-                else if (this.context.innerText.trim() == "Wastewater")
-                    this.append('<div style="background:#BF0000;height: 3px;margin-bottom:2px;"></div>');
-                else if (this.context.innerText.trim() == "Atmospheric-deposition" || this.context.innerText.trim() == "Atmospheric deposition")
-                    this.append('<div style="background:#0070C0;height: 3px;margin-bottom:2px;"></div>');
-                else if (this.context.innerText.trim() == "Fertilizer")
-                    this.append('<div style="background:#FFEC99;height: 3px;margin-bottom:2px;"></div>');
+                var colorArr = ( $('.radio input[type="radio"]:checked')[0].id == 'radio1' ? ['#0070C0', '#97DA7C', '#663100', '#FFEC99', '#FFCCFF', '#BF0000'] : ['#0070C0', '#663100', '#FFEC99', '#FFCCFF', '#BF0000'] );
+                if (this.context.cellIndex > 0){
+                    //dont want the label column
+                    var index = this.context.cellIndex -1;
+                    this.append('<div style="background:' + colorArr[index] + ';height: 3px;margin-bottom:2px;"></div>');
+                }
             }
         });    
     
