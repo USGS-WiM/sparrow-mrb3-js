@@ -282,7 +282,7 @@ function setLayerDefs(){
         
         var layerDefs = [];
 
-/*        if (layerDefObj.AOI3){
+        if (layerDefObj.AOI3){
             layerDefs[0] = definitionString;
             layerDefs[1] = definitionString;
         }
@@ -291,11 +291,17 @@ function setLayerDefs(){
             layerDefs[2] = definitionString;
             layerDefs[5] = definitionString;
             layerDefs[6] = definitionString;
-        }*/
-
+        }
+        if (layerDefObj.AOI1){
+            layerDefs[0] = definitionString;
+            layerDefs[1] = definitionString;
+            layerDefs[3] = definitionString;
+            layerDefs[5] = definitionString;
+            layerDefs[7] = definitionString;
+        }
         //LayerDefs on ALL Layers
         /***TODO UPDATE IMPORTANT -- note that not all of these layer combinations are going to work with the attributes we have currently.  Some layer defs will not set because the fields don't exist***/
-        layerDefs[0] = definitionString; //contains ST, GP1, GP2, GP3, SG1, SG2, SG3
+        //layerDefs[0] = definitionString; //contains ST, GP1, GP2, GP3, SG1, SG2, SG3
         /*layerDefs[1] = definitionString; //contains GP3, GP1;       NO GP2/Tributary
         layerDefs[2] = definitionString; //contains GP2, GP1;       NO GP3/HUC8
         layerDefs[3] = definitionString; //contains GP1 ONLY;
@@ -314,8 +320,10 @@ function setLayerDefs(){
         layerDefs[14] = definitionString;
         layerDefs[15] = definitionString;*/
         
-        var layer = app.map.getLayer("SparrowRanking");
-        layer.setLayerDefinitions(layerDefs);
+        app.map.getLayer("SparrowRanking").setLayerDefinitions(layerDefs, true);
+
+        //app.map.getLayer('SparrowRanking').refresh();
+
         //generateRenderer();
 
         //updateAOI(layerDefs[0], selectId);
