@@ -1843,7 +1843,7 @@ require([
                     break;
                 case 2:
                     if( $('#st-select')[0].selectedIndex > 0) whichName = 'SG2';
-                    else fieldName = 'GP2';
+                    else whichName = 'GP2';
                     break;
                 case 3: 
                     if( $('#st-select')[0].selectedIndex > 0) whichName = 'SG1';
