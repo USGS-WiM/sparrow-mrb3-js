@@ -368,10 +368,16 @@
                             <div class="user-guide-item-image" style="height:200px;"><img src="images/userguide/dataDisplay.png"/></div>
                             <p><b>Data Display Options</b>Once the Display Filters have been chosen, there are several ways to display data about the polygons of interest in the Data Display settings.</p>
                         </div>
-
+                        <div class="user-guide-item">
+                            <div class="user-guide-item-image"><img src="images/userguide/singleSelecting.png"/></div>
+                            <p><b>+ Select</b>Clicking the Select button allows individual map feature selection. Multiple features can be selected. To unselect, hold the Shift key then Click the feature to unselect it.
+                             After all features of interest have been selected, click Stop Selecting. 
+                            </p>
+                        </div>
                         <div class="user-guide-item">
                             <div class="user-guide-item-image"><img src="images/userguide/chart.png"/></div>
-                            <p><b>Show Chart</b>Clicking the Show Chart button will show a window with two tabs; Chart and Table. This window can be repositioned to view underlying map information.
+                            <p><b>Show Chart</b>Clicking the Show Chart button will show a window with two tabs; Chart and Table. The information in the Chart and Table will either represent the full feature layer
+                            visible on the map, or it will represent the selection chosen from individual selecting features. This window can be repositioned to view underlying map information.
                                 The Chart tab shows a chart for the full layer visible in the map based on the filters chosen in the Data Filters section.  
                                 Clicking on a the chart legend items will toggle individual sources on and off, as well as recalculating the y-axis range.
                                 Mouse over a bar to see its corresponding map feature as well as the exact value for each source. 
@@ -580,33 +586,20 @@
                 </div>
                 <div id="dataDisplayPanel" class="panel-collapse collapse" role="tabpanel" aria-labelledby="dataDisplayPanelHeader">
                     <div class="panel-body collapse in">
-                        <div id="toggle" style="padding: 2px 2px;">
-                            <div class="btn">
-                                <button type="button" class="btn btn-primary" data-target="chartModal" id="chartButton">
-                                    <span class="glyphicon glyphicon-signal"></span> Show Chart
-                                </button>
-                            </div>
-
+                        <div id="toggle" style="padding: 2px 2px;">                           
                             <div class="select-label" id="customSelect">
-                                <p>Show Custom Display Chart:</p>
+                                <p>Select on map:</p>
                             </div>
-
                             <!--'Click' Button ( select polygon by polygon. all selected get highlighted) -->
                             <div class="btn">
                                 <button type="button" class="btn btn-primary" id="clickPolyButton">
                                     <span class="glyphicon glyphicon-plus"></span> Click
                                 </button> 
                             </div>
-                            <!--'Draw' Button ( draw square to select. all within draw get highlighted)
+                            <br />
                             <div class="btn">
-                                <button type="button" class="btn btn-primary" id="drawPolyButton">
-                                    <span class="glyphicon glyphicon-pencil"></span> Draw
-                                </button> 
-                            </div> -->
-                            <!--'Show Defined Chart' Button activated once one polygon is selected. onClick - show chart for selected -->
-                            <div class="btn">
-                                <button type="button" class="btn btn-primary" id="customChartButton">
-                                    <span class="glyphicon glyphicon-signal"></span> Show Defined Chart
+                                <button type="button" class="btn btn-primary" id="chartButton">
+                                    <span class="glyphicon glyphicon-signal"></span> Show Chart
                                 </button> 
                             </div>
                         </div>

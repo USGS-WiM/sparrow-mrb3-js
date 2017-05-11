@@ -691,3 +691,7 @@ table.hover-highlight tbody > tr.even:hover > td {
     padding-left: 25px !important;
 
 }
+#customSelect p {
+    padding-left: 10px;
+    margin-bottom: 0;
+}
