@@ -7,11 +7,13 @@ require([
     "esri/geometry/Extent",
     "esri/layers/WMSLayerInfo",
     "esri/layers/FeatureLayer",
+    "esri/layers/ImageParameters",
     'dojo/domReady!'
 ], function(
     Extent,
     WMSLayerInfo,
-    FeatureLayer
+    FeatureLayer,
+    ImageParameters
 ) {
 
     var sparrowOverlay;
@@ -20,6 +22,8 @@ require([
     } else{
         sparrowOverlay = 1;
     }
+
+    //var imageParameters = new ImageParameters();
 
     allLayers = [
         {
@@ -32,6 +36,7 @@ require([
                     "visibleLayers": [sparrowOverlay],
                     "options":{
                         "id": "SparrowRanking",
+
                         "opacity": 0.75,
                         "visible": true
                     },

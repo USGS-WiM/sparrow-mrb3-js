@@ -230,7 +230,7 @@ function AOIChange(e){
 
     setLayerDefs();    
 
-    //generateRenderer();
+    generateRenderer();
 
     if( $("#chartWindowDiv").css("visibility") == "visible" ) {
         app.map.graphics.clear();
@@ -282,7 +282,7 @@ function setLayerDefs(){
         
         var layerDefs = [];
 
-/*        if (layerDefObj.AOI3){
+        if (layerDefObj.AOI3){
             layerDefs[0] = definitionString;
             layerDefs[1] = definitionString;
         }
@@ -291,12 +291,18 @@ function setLayerDefs(){
             layerDefs[2] = definitionString;
             layerDefs[5] = definitionString;
             layerDefs[6] = definitionString;
-        }*/
-
+        }
+        if (layerDefObj.AOI1){
+            layerDefs[0] = definitionString;
+            layerDefs[1] = definitionString;
+            layerDefs[3] = definitionString;
+            layerDefs[5] = definitionString;
+            layerDefs[7] = definitionString;
+        }
         //LayerDefs on ALL Layers
         /***TODO UPDATE IMPORTANT -- note that not all of these layer combinations are going to work with the attributes we have currently.  Some layer defs will not set because the fields don't exist***/
-        layerDefs[0] = definitionString; //contains ST, GP1, GP2, GP3, SG1, SG2, SG3
-        layerDefs[1] = definitionString; //contains GP3, GP1;       NO GP2/Tributary
+        //layerDefs[0] = definitionString; //contains ST, GP1, GP2, GP3, SG1, SG2, SG3
+        /*layerDefs[1] = definitionString; //contains GP3, GP1;       NO GP2/Tributary
         layerDefs[2] = definitionString; //contains GP2, GP1;       NO GP3/HUC8
         layerDefs[3] = definitionString; //contains GP1 ONLY;
         layerDefs[4] = definitionString; //contains ST ONLY;
@@ -314,8 +320,10 @@ function setLayerDefs(){
         layerDefs[14] = definitionString;
         layerDefs[15] = definitionString;*/
         
-        var layer = app.map.getLayer("SparrowRanking");
-        layer.setLayerDefinitions(layerDefs);
+        app.map.getLayer("SparrowRanking").setLayerDefinitions(layerDefs, true);
+
+        //app.map.getLayer('SparrowRanking').refresh();
+
         //generateRenderer();
 
         //updateAOI(layerDefs[0], selectId);
@@ -830,6 +838,58 @@ function getChartOutfields(sparrowLayerId){
     }
 } //END getLegendLabels()
 
+function getExtraOutfields(outfieldsArr, sparrowLayerId){
+    var finalChartArr = outfieldsArr;
+
+    switch(sparrowLayerId){
+        /////BEGIN PHOSPHORUS LAYERS___________________________________________________________
+        case 0: case 8: 
+            //CATCHMENTS
+            //finalChartArr.push("PNAME");
+            finalChartArr.push("DEMIAREA");
+            finalChartArr.push("DEMTAREA");
+            
+            break;
+        case 1: case 9:
+            //HUC8 
+            finalChartArr.push("GP3_AREA");
+            
+            break;
+        case 2: case 10:
+            //Tributarys
+            finalChartArr.push("GP2_AREA");
+            
+            break;
+        case 3: case 11:
+            //Independent Watershed
+             finalChartArr.push("GP1_AREA");
+
+            break;
+        case 4: case 12:
+            //State
+            finalChartArr.push("ST_AREA");
+
+            break;
+        case 5: case 13:
+            //grp3 w/ state divisions
+            finalChartArr.push("SG3_AREA");
+
+            break;
+        case 6: case 14:
+            //grp 2 w/ state divisions
+            finalChartArr.push("SG2_AREA");
+
+            break;
+        case 7: case 15:
+            //grp1 w/ state divisions
+            finalChartArr.push("SG1_AREA");
+
+            break;
+    }
+
+    return finalChartArr;
+}
+
 
 function generateRenderer(){
         require([
@@ -881,10 +941,10 @@ function generateRenderer(){
         //var selectedMetric = "ST_AL";
         app.outFields = [selectedMetric];
         app.currentAttribute = selectedMetric; 
-        var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+        /*var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
             new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
             new Color([255,0,0]), 2),new Color([255,255,0,0.25])
-          );
+          );*/
 
         var classDef = new ClassBreaksDefinition();
         classDef.classificationField = app.currentAttribute;
