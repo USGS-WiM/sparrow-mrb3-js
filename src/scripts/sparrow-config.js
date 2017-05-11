@@ -105,7 +105,7 @@ var Catchments = [
         field: "ACCL", 
         name: catchmentDefinitions.mrb_id + " " + catchmentDefinitions.accl, 
         chartOutfields: [
-            { attribute: "MRB_ID", label: catchmentDefinitions.mrb_id }, 
+            { attribute: "PNAME", label: aggregateDefinitions.pname },
             { attribute: "ACCL_S1", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.accl + ' ' + phosphorusSourceDefinitons.s1},
             { attribute: "ACCL_S2", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.accl + ' ' + phosphorusSourceDefinitons.s2},
             { attribute: "ACCL_S3", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.accl + ' ' + phosphorusSourceDefinitons.s3},
@@ -118,7 +118,7 @@ var Catchments = [
         field: "INCL", 
         name: catchmentDefinitions.mrb_id + " " + catchmentDefinitions.incl, 
         chartOutfields: [
-            { attribute: "GP3", label: catchmentDefinitions.mrb_id }, 
+            { attribute: "PNAME", label: aggregateDefinitions.pname }, 
             { attribute: "INCL_S1", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.incl + ' ' + phosphorusSourceDefinitons.s1},
             { attribute: "INCL_S2", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.incl + ' ' + phosphorusSourceDefinitons.s2},
             { attribute: "INCL_S3", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.incl + ' ' + phosphorusSourceDefinitons.s3},
@@ -147,7 +147,7 @@ var Catchments = [
         field: "DINCL", 
         name: catchmentDefinitions.mrb_id + " " + catchmentDefinitions.dincl, 
         chartOutfields: [
-            { attribute: "GP3", label: catchmentDefinitions.mrb_id }, 
+            { attribute: "PNAME", label: aggregateDefinitions.pname },
             { attribute: "DINCL_S1", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.dincl + ' ' + phosphorusSourceDefinitons.s1},
             { attribute: "DINCL_S2", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.dincl + ' ' + phosphorusSourceDefinitons.s2},
             { attribute: "DINCL_S3", label: catchmentDefinitions.mrb_id + ' ' + catchmentDefinitions.dincl + ' ' + phosphorusSourceDefinitons.s3},

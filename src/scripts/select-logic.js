@@ -838,6 +838,58 @@ function getChartOutfields(sparrowLayerId){
     }
 } //END getLegendLabels()
 
+function getExtraOutfields(outfieldsArr, sparrowLayerId){
+    var finalChartArr = outfieldsArr;
+
+    switch(sparrowLayerId){
+        /////BEGIN PHOSPHORUS LAYERS___________________________________________________________
+        case 0: case 8: 
+            //CATCHMENTS
+            //finalChartArr.push("PNAME");
+            finalChartArr.push("DEMIAREA");
+            finalChartArr.push("DEMTAREA");
+            
+            break;
+        case 1: case 9:
+            //HUC8 
+            finalChartArr.push("GP3_AREA");
+            
+            break;
+        case 2: case 10:
+            //Tributarys
+            finalChartArr.push("GP2_AREA");
+            
+            break;
+        case 3: case 11:
+            //Independent Watershed
+             finalChartArr.push("GP1_AREA");
+
+            break;
+        case 4: case 12:
+            //State
+            finalChartArr.push("ST_AREA");
+
+            break;
+        case 5: case 13:
+            //grp3 w/ state divisions
+            finalChartArr.push("SG3_AREA");
+
+            break;
+        case 6: case 14:
+            //grp 2 w/ state divisions
+            finalChartArr.push("SG2_AREA");
+
+            break;
+        case 7: case 15:
+            //grp1 w/ state divisions
+            finalChartArr.push("SG1_AREA");
+
+            break;
+    }
+
+    return finalChartArr;
+}
+
 
 function generateRenderer(){
         require([
@@ -889,10 +941,10 @@ function generateRenderer(){
         //var selectedMetric = "ST_AL";
         app.outFields = [selectedMetric];
         app.currentAttribute = selectedMetric; 
-        var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+        /*var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
             new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
             new Color([255,0,0]), 2),new Color([255,255,0,0.25])
-          );
+          );*/
 
         var classDef = new ClassBreaksDefinition();
         classDef.classificationField = app.currentAttribute;

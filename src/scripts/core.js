@@ -878,7 +878,7 @@ require([
         //setup esri query
         var chartQuery = new esri.tasks.Query();
         chartQuery.returnGeometry = true;
-        chartQuery.outFields = outfieldsArr;
+        chartQuery.outFields = getExtraOutfields(outfieldsArr, sparrowLayerId);
         chartQuery.where = whereClause;
 
         chartQueryTask.execute(chartQuery, showChart);
@@ -1069,8 +1069,21 @@ require([
         var series = [];
         var featureSort = [];
 
+
+
         $.each(response.features, function(index, feature){
+            /***this function removes any fields ending with "AREA" from the response.features Object. (i.e. DEMIAREA, DEMTAREA, GP1_AREA, etc.)  
+            The chart was not built to accommodate the extra area fields, but they're necessary for display in the table.***/
+            $.map(Object.keys(feature.attributes), function(val, i){
+                //find ANY INDEX that contains "AREA" in the key
+                if (val.indexOf("AREA") != 1){
+                    delete feature.attributes[val];
+                }
+            });
+
+            //push the feature attributes AFTER removing all the "AREA" atributes.
             featureSort.push(feature.attributes);
+            
         });
 
         var sum = 0;
