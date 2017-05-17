@@ -207,6 +207,17 @@ function loadEventHandlers() {
 
     /***TODO UPDATE IMPORTANT! -- THE CASES IN MRB3 ARE CORRECT, BUT THE LOGIC NEEDS TO BE REVISITED TO DETERMINE WHICH AOI COMBINATIONS NEED TO BE DISABLED****/
     $('.nonAOISelect').on('change', function(){
+        //first clear all disabled's and warnings                
+        $("#grp1-select").removeClass('disabled'); //Main River Basin            
+        $("#grp1-select").removeAttr('disabled'); 
+        $(".grp1-warning").remove();
+        $("#grp2-select").removeClass('disabled'); //Tributary
+        $("#grp2-select").removeAttr('disabled'); 
+        $(".grp2-warning").remove();
+        $("#grp3-select").removeClass('disabled'); //huc8
+        $("#grp3-select").removeAttr('disabled'); 
+        $(".grp3-warning").remove();
+        
         switch($('#groupResultsSelect')[0].selectedIndex) {
             case 0: //Catchment               
                 //CHART button logic  commented out @ cooperator's request see github issue #82
@@ -221,24 +232,12 @@ function loadEventHandlers() {
                     $("#chartButton").removeClass('disabled');
                     $("#chartButton").removeAttr('disabled');
                 }*/
-
-                //AOI logic (ALL AOIs Enabled)                
-                $("#grp1-select").removeClass('disabled'); //Main River Basin            
-                $("#grp1-select").removeAttr('disabled'); 
-                $(".grp1-warning").remove();
+                // all AOIs enabled
                 $('#grp1-select').selectpicker('refresh');
-
-                $("#grp2-select").removeClass('disabled'); //Tributary
-                $("#grp2-select").removeAttr('disabled'); 
-                $(".grp2-warning").remove();
                 $('#grp2-select').selectpicker('refresh');
-
-                $("#grp3-select").removeClass('disabled'); //huc8
-                $("#grp3-select").removeAttr('disabled'); 
-                $(".grp3-warning").remove();
                 $('#grp3-select').selectpicker('refresh');
                 break;
-            case 1: //HUC8                
+            case 1: //HUC8    
                 //CHART button logic no longer needed but keep in case cooperator wants to switch back to no ACC load/yield charts
                 /*$("#chartButton").removeClass('disabled');
                 $("#chartButton").removeAttr('disabled');*/
@@ -246,7 +245,7 @@ function loadEventHandlers() {
                  /***AOI Logic (Disable Tributary(GP2) & clear value if any) ***/
                  //Tributary
                 if (app.getLayerDefObj().AOI2) {
-                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Tributary Area of Interest while grouping by State.'>"+
+                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Tributary Area of Interest while grouping by HUC8.'>"+
                         "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp2-select option').attr("selected",false);
@@ -254,27 +253,19 @@ function loadEventHandlers() {
                     var newE2 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
                     AOIChange(newE2); //go through the aoichange event to do the rest                    
                 }
-                $("#grp2-select").attr('disabled', 'disabled'); //huc8       
+                $("#grp2-select").attr('disabled', 'disabled'); //trib       
                 $("#grp2-select").addClass('disabled');
                 $('#grp2-select').selectpicker('refresh');
                 
-                //AOI logic HUC8(GP3) AND Main River basin(GP1) enabled   
-                $("#grp1-select").removeClass('disabled'); //Main Riv. Basin               
-                $("#grp1-select").removeAttr('disabled'); 
-                $(".grp1-warning").remove();
+                //AOI HUC8(GP3) AND Main River basin(GP1) enabled   
                 $('#grp1-select').selectpicker('refresh');
-
-                $("#grp3-select").removeClass('disabled'); //huc8
-                $("#grp3-select").removeAttr('disabled'); 
-                $(".grp3-warning").remove();
                 $('#grp3-select').selectpicker('refresh');
                 break;
             case 2: //Tributary
-                
                 /***AOI logic (disable HUC8(GP3) & clear value if any) ***/
                 //huc8
                 if (app.getLayerDefObj().AOI3) {
-                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by Independent Watershed.'>"+
+                    $("#clear_btn").append("<a class='grp3-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by Tributary.'>"+
                         "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp3-select option').attr("selected",false);
@@ -286,25 +277,16 @@ function loadEventHandlers() {
                 $("#grp3-select").attr('disabled', 'disabled');//huc8
                 $("#grp3-select").addClass('disabled');
                 $('#grp3-select').selectpicker('refresh');
-
-                //endable Tributary (in case it was previously disabled)
-                $("#grp2-select").removeClass('disabled'); //Tributary
-                $("#grp2-select").removeAttr('disabled'); 
-                $(".grp2-warning").remove();
-                $('#grp2-select').selectpicker('refresh');
                 
-                //endable Main River Basin (in case it was previously disabled)
-                $("#grp1-select").removeClass('disabled'); //Main River Basin               
-                $("#grp1-select").removeAttr('disabled'); 
-                $(".grp2-warning").remove();
+                //AOI Tributary(GP2) AND Main River basin(GP1) enabled 
+                $('#grp2-select').selectpicker('refresh');                
                 $('#grp1-select').selectpicker('refresh');
                 break;
             case 3: //Main River Basin
-
                 /*** AOI logic (disable Tributary(GP2)  AND HUC8(GP3) & clear values if any) ***/
                 //Tributary
                 if (app.getLayerDefObj().AOI2) {
-                    $("#clear_btn").append("<a class='grp1-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Tributary Area of Interest while grouping by State.'>"+
+                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Tributary Area of Interest while grouping by Main River Basin.'>"+
                         "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp2-select option').attr("selected",false);
@@ -315,10 +297,12 @@ function loadEventHandlers() {
                 $("#grp2-select").attr('disabled', 'disabled'); //Tributary    
                 $("#grp2-select").addClass('disabled');
                 $('#grp2-select').selectpicker('refresh');
-                
+
+                // AIO Main River Basin (GP1) enabled
+                $('#grp1-select').selectpicker('refresh');
                 //huc8
                 if (app.getLayerDefObj().AOI3) {
-                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by State.'>"+
+                    $("#clear_btn").append("<a class='grp3-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by Main River Basin.'>"+
                         "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp3-select option').attr("selected",false);
@@ -331,7 +315,6 @@ function loadEventHandlers() {
                 $('#grp3-select').selectpicker('refresh');
                 break;
             case 4: //STATE
-
                 /***AOI logic (disable GP1(Main Riv. Basin) AND GP2(Trib.) AND GP3(HUC8) & clear values if any) ***/
                 //Main Riv Basin
                 if (app.getLayerDefObj().AOI1) {
@@ -360,10 +343,9 @@ function loadEventHandlers() {
                 $("#grp2-select").attr('disabled', 'disabled'); //huc8       
                 $("#grp2-select").addClass('disabled');
                 $('#grp2-select').selectpicker('refresh');
-                break;
 
                 if (app.getLayerDefObj().AOI3) {
-                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by State.'>"+
+                    $("#clear_btn").append("<a class='grp3-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by State.'>"+
                         "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
                     //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
                     $('#grp3-select option').attr("selected",false);

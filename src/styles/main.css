@@ -586,6 +586,14 @@ table.hover-highlight tbody > tr.even:hover > td {
   color:red;
 }
 
+.grp3-warning{
+  color:red;
+  padding:5px;
+}
+.grp3-warning:hover {
+  color:red;
+}
+
 .esriLegendLayerLabel{
     visibility: collapse;
 }
