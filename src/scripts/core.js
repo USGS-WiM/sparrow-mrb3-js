@@ -134,39 +134,24 @@ require([
             // what to do when a location is found
             // o.result is geojson point feature of location with properties
             var noExtents = ["GNIS_MAJOR", "GNIS_MINOR", "ZIPCODE", "AREACODE"];
-                var noExtentCheck = noExtents.indexOf(o.result.properties["Source"])
-                if (noExtentCheck == -1) {
-                    app.map.setExtent(
-                        new esri.geometry.Extent({
-                            xmin: o.result.properties.LonMin,
-                            ymin: o.result.properties.LatMin,
-                            xmax: o.result.properties.LonMax,
-                            ymax: o.result.properties.LatMax,
-                            spatialReference: {"wkid":4326}
-                        }),
-                        true
-                    );
-                } else {
-                    //map.setCenter();
-                    //require( ["esri/geometry/Point"], function(Point) {
-                        app.map.centerAndZoom(
-                            new Point( o.result.properties.Lon, o.result.properties.Lat ),
-                            12
-                        );
-                    //});
-                }
-
-            /*// zoom to location            
-            app.map.setExtent(
-                new esri.geometry.Extent({
-                    xmin: o.result.properties.LonMin,
-                    ymin: o.result.properties.LatMin,
-                    xmax: o.result.properties.LonMax,
-                    ymax: o.result.properties.LatMax,
-                    spatialReference: {'wkid':4326}
-                }),
-                true
-            );            */
+            var noExtentCheck = noExtents.indexOf(o.result.properties["Source"])
+            if (noExtentCheck == -1) {
+                app.map.setExtent(
+                    new esri.geometry.Extent({
+                        xmin: o.result.properties.LonMin,
+                        ymin: o.result.properties.LatMin,
+                        xmax: o.result.properties.LonMax,
+                        ymax: o.result.properties.LatMax,
+                        spatialReference: {"wkid":4326}
+                    }),
+                    true
+                );
+            } else {
+                app.map.centerAndZoom(
+                    new Point( o.result.properties.Lon, o.result.properties.Lat ),
+                    12
+                );
+            }            
             
             // open popup at location listing all properties
             app.map.infoWindow.setTitle('Search Result');
@@ -180,8 +165,7 @@ require([
             
             app.map.infoWindow.show(
                 new Point( o.result.properties.Lon, o.result.properties.Lat )
-            );           
-            
+            );            
         },
         "include_usgs_sw" : true,
         "include_huc2" : true,
@@ -189,7 +173,6 @@ require([
         "include_huc6" : true,
         "include_huc8" : true,
         "include_huc12" : true
-
     });
 
 
@@ -197,12 +180,7 @@ require([
     var AllAOIOptions = [];
     var Grp2NamDescArr = [];
     var tableArr = []; //global for table updating
-    var labelArr = []; //glocal for table updating
-    //load additional basemap since it isn't really a basemap but a tiled image layer
-   /* var nationalMapBasemap = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer');
-    $('#btnNatlMap').on('click', function () {
-        app.map.addLayer(nationalMapBasemap);
-    });*/
+    var labelArr = []; //glocal for table updating    
 
     loadEventHandlers();
     //setupQueryTask(serviceBaseURL + 1, [ 'GP2', 'GRP_2_DESC' ], '1=1');
@@ -219,9 +197,7 @@ require([
         }     
     }*/
 
-
-    app.setLayerDefObj = function(newObj){
-        
+    app.setLayerDefObj = function(newObj){        
         //UPDATE NOTE: need 1 case for every AOI select
         switch(newObj.selectedId){
             case 'st-select':
@@ -308,8 +284,7 @@ require([
         var grp1Options = [];
         var stOptions = [];
         
-        switch(selectedId){
-            
+        switch(selectedId) {
             //ST SELECT CHANGED
             case 'st-select':
                 //filter the grp1- and grp3-select options using the selected ST__________________________________________________________________________________________________________________________________________
@@ -651,8 +626,7 @@ require([
 
                 var arrowNode1 =  query('.pointer',app.map.infoWindow.domNode)[0];
                 domClass.add(arrowNode1, 'hidden');
-            }.bind(this));
-   
+            }.bind(this));   
         }
     };
 
@@ -669,8 +643,7 @@ require([
         for (i in visLayers){
             if (visLayers[i].id === 'nitroCalibration' && app.map.getLayer('nitroCalibration').visible === true){
                 calibrationId = app.map.getLayer('nitroCalibration').visibleLayers[0];
-                app.identifyParams.layerIds.push(calibrationId);
-                
+                app.identifyParams.layerIds.push(calibrationId);                
             }
             if (visLayers[i].id === 'phosCalibration' && app.map.getLayer('phosCalibration').visible === true){
                 calibrationId = app.map.getLayer('phosCalibration').visibleLayers[0];
@@ -686,7 +659,6 @@ require([
             //if in selection mode and not unselecting, highlight shape and add to array of chosen shapes
             if (app.clickSelectionActive) {                
                 $.each(response, function(i, respObj){
-                    //$.each(something.feature, function(i, feature){
                     var feature = respObj.feature;
                     var respValue = respObj.displayFieldName == "MRB_ID" ? respObj.value : "'" + respObj.value + "'";
                     
@@ -758,8 +730,7 @@ require([
                             responseObj.feature.setInfoTemplate(calibrationTemplateN);
                             app.map.infoWindow.setFeatures([responseObj.feature]);
                             app.map.infoWindow.show(evt.mapPoint);
-                            calibrationInfoWindow = true;
-                        
+                            calibrationInfoWindow = true;                        
                         }
                     });
 
@@ -786,22 +757,6 @@ require([
             }// end else  
         }); //END deferred callback
 
-        /*function setupArguments() {
-            var fields = getChartOutfields( app.map.getLayer('SparrowRanking').visibleLayers[0] );
-            var attributes = response[0].feature.attributes;
-            var valuePairs = {};
-
-            //need to wrap value in single quotes for ESRI REST Service query.  BUT ONLY IF THE DISPLAY FIELD IS A STRING!
-            if (response[0].displayFieldName == "MRB_ID"){
-                var chartQueryArg = response[0].displayFieldName + " = " + response[0].value; 
-            } else{
-                var chartQueryArg = response[0].displayFieldName + " = " + "'" + response[0].value + "'"; 
-            }
-            
-            $.each(fields, function(index, obj){
-                console.log(obj.attribute);
-            });
-        }*/
     } //END executeIdentifyTask();
 
     
@@ -838,12 +793,7 @@ require([
 
     }//END createTableQuery()
 
-    app.createChartQuery = function(optionalWhereClause){
-        //if ($('#tableResizable').is(":visible")){
-        //    $('#tableResizable').hide();
-       // }
-        $("#tableButton").prop('disabled', true);
-        
+    app.createChartQuery = function(optionalWhereClause){        
         $('#chartContainer').empty();
         console.log('creating chart query');
         var chartQueryTask;
@@ -857,8 +807,7 @@ require([
             }
         } else{
             var whereClause = optionalWhereClause;
-        }
-        
+        }        
 
         //add map layer ID to query URL
         var SparrowRankingUrl = serviceBaseURL + sparrowLayerId;
@@ -882,7 +831,6 @@ require([
         chartQuery.where = whereClause;
 
         chartQueryTask.execute(chartQuery, showChart);
-
     }//END app.createChartQuery
 
    
@@ -929,29 +877,20 @@ require([
         //IF options already exist, be sure to REMOVE OLD OPTIONS before calling this function
         
         // get UNIQUE options from AllAOIOptions global Object
-        var grp3Options = getUniqueArray(AllAOIOptions, 'GP3');// [...new Set(AllAOIOptions.map(item => item.GP2))];
-        var grp2Options = getUniqueArray(AllAOIOptions, 'GP2');// [...new Set(AllAOIOptions.map(item => item.GP2))];
-        var grp1Options = getUniqueArray(AllAOIOptions, 'GP1');//[...new Set(AllAOIOptions.map(item => item.GP1))];
-        var STOptions = getUniqueArray(AllAOIOptions, 'ST');//[...new Set(AllAOIOptions.map(item => item.ST))];
-
-        
-        /*console.log('ST options: ' + STOptions);
-        console.log('grp1 options: ' + grp1Options);
-        console.log('grp2 options: ' + grp2Options);
-        console.log('grp3 options: ' + grp3Options);*/
+        var grp3Options = getUniqueArray(AllAOIOptions, 'GP3');
+        var grp2Options = getUniqueArray(AllAOIOptions, 'GP2');
+        var grp1Options = getUniqueArray(AllAOIOptions, 'GP1');
+        var STOptions = getUniqueArray(AllAOIOptions, 'ST');
 
         $.each(grp3Options, function(index, option){
             if (option != " "){
                 $('#grp3-select').append(new Option(option));
-            }
-             
+            }             
         });
         $.each(grp2Options, function(index, option){
-            //var grp2Desc = Grp2NamDescArr.filter(function(s){ return s.GP2 === option; })[0].GRP_2_DESC;
             if (option != " "){
                 $('#grp2-select').append(new Option(option));
             }
-            //$('#grp2-select').append('<option value="' + option + '">' + option + ' - ' + grp2Desc + '</option>');
         });
         $.each(grp1Options, function(index, option){
             if (option != " "){
@@ -998,9 +937,6 @@ require([
         app.clearFindGraphics();
         var g = (item.graphic ? item.graphic : item.result.feature);
         g.setSymbol(sym);
-        //addPlaceGraphic(item.result,g.symbol);
-        // Close modal
-        //$('#geosearchModal').modal('hide');
     }
     function geocodeResults(places) {
         places = places.results;
@@ -1095,8 +1031,7 @@ require([
             });
 
             //push the feature attributes AFTER removing all the "AREA" atributes.
-            featureSort.push(feature.attributes);
-            
+            featureSort.push(feature.attributes);            
         });
 
         var sum = 0;
@@ -1171,9 +1106,8 @@ require([
             series[index].data = chartArr[index];
         });
 
-
-         ///SAMPLE DATA FORMAT
-        /*var series = [{
+         /// SAMPLE DATA FORMAT
+        /* var series = [{
             name: 'dl1_ST_sc1',
             data: [5, 3, 4, 7, 2, 5, 3, 5, 3, 4, 7, 2, 5, 3, 5, 3, 4, 7, 2, 5, 3, 5, 3, 4, 7, 2, 5, 3]
         },
@@ -1197,7 +1131,7 @@ require([
             name: 'dl1_ST_sc6',
             data: [5, 3, 4, 7, 2, 5, 3, 5, 3, 4, 7, 2, 5, 3, 5, 3, 4, 7, 2, 5, 3, 5, 3, 4, 7, 2, 5, 3]
         }
-        ]*/
+        ] */
 
         //TODO: DYNAMICALLY LABEL BASED ON DROPDOWN VALUES????
         function labelxSelect(){
@@ -1339,9 +1273,6 @@ require([
 
          /*function highlightMapFeature(category){
             var layerDefinitions = "GP3 = '" + category + "'";
-
-
-
             var selectionSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, 
                 new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
                 new Color([255, 0, 0]), 2), new Color([255,255, 0, 0.5]));
@@ -1351,12 +1282,9 @@ require([
             app.map.getLayer("SparrowGraphics").setSelectionSymbol(selectionSymbol);
         }*/
 
-
         /*function highlightMapFeature(attributeString){
             console.log('in highlightMapFeature()');
-
             //TODO: need to query for geometry??? using attribute string?
-
             var highlightGraphic = new Graphic(attributeString)
         }*/
 
@@ -1396,11 +1324,9 @@ require([
 
         //$('#chartWindowPanelTitle').append('<br/><div class="btn"><button type="button" class="btn btn-primary" id="exportButton"><span class="glyphicon glyphicon-signal"></span> Export Chart Data</button></div>');
 
-        //only create close / minimize if they don't already exist
-        //if ($("#chartMinimize").length == 0){
+        //only create close / minimize if they don't already exist        
         if ($('#chartClose').length == 0){
             $('#chartWindowDiv .dropdown').prepend('<div id="chartClose" title="close"><b>X</b></div>');
-            //$("#chartWindowDiv .dropdown").prepend("<div id='chartMinimize' title='collapse'><b>_</b></div>");
         }
 
         //moved this out of exectureIdentifyTask()
@@ -1427,7 +1353,6 @@ require([
             $('#chartWindowDiv').css('visibility', 'hidden');
             $('#chartWindowContainer').empty();
             $('#chartWindowPanelTitle').empty();
-            $("#tableButton").prop("disabled", false);
         });
 
         //need listener to resize chart
@@ -1439,7 +1364,6 @@ require([
 
 
         //END LOBIPANEL-------------------------------------------------------------------------------------------------------
-        //var colorArr = ( $('.radio input[type="radio"]:checked')[0].id == 'radio1' ? ['#29667F', '#B43E33', '#64A87E', '#FFE271', '#7F754A', '#F7C97F'] : ['#29667F', '#B43E33', '#82BEFF', '#B89769', '#FFC943'] );
         var colorArr = ( $('.radio input[type="radio"]:checked')[0].id == 'radio1' ? ['#0070C0', '#97DA7C', '#663100', '#FFEC99', '#FFCCFF', '#BF0000'] : ['#0070C0', '#663100', '#FFEC99', '#FFCCFF', '#BF0000'] );
 
         var chart = $('#chartWindowContainer').highcharts(); 
@@ -1830,15 +1754,6 @@ require([
                 },
                 series: series
             });
-            //Custom Reset Button
-            /*$('#resetButton').click(function() {
-                var chart = $('#chartWindowContainer').highcharts();
-                chart.xAxis[0].setExtremes(null,null);
-                $("#resetButton").prop("disabled", true);
-                 
-                //chart.resetZoomButton.hide();
-            });*/
-
             $(".highcharts-button-box").click(function(){
                 $.each(app.map.graphics.graphics, function(i, obj){
                     if (obj.symbol.id == 'zoomhighlight'){
@@ -1933,22 +1848,16 @@ require([
         
         $('#resultsTable').append('<tbody id="tableBody"></tbody>');
         $.each(response, function(rowIndex, feature) {
-           // console.log('feature(outer)' + feature);
             var rowI = rowIndex;
 
-            htmlArr.push("<tr id='row"+rowIndex+"'>")
-
+            htmlArr.push("<tr id='row"+rowIndex+"'>");
             $.each(feature, function(key, value){
-                htmlArr.push('<td>'+ value +'</td>');                
-            //$("#tableBody").append("<tr id='row"+rowIndex+"'></tr>");
-
+                htmlArr.push('<td>'+ value +'</td>'); 
             });
 
             htmlArr.push("</tr>");
         });  
         $('#tableBody').html(htmlArr.join(''));
-       // $('#resultsTable').trigger('update');
-       // $( '.tablesorter' ).trigger( 'updateHeaders' );
         $('.tablesorter').trigger("updateAll");
         $('.tablesorter').tablesorter({
             widthFixed: true,
@@ -1960,20 +1869,11 @@ require([
                     this.append('<div style="background:' + colorArr[index] + ';height: 3px;margin-bottom:2px;"></div>');
                 }
             }
-        });    
-    
-      //  $('#tableWindowContainer').refresh();
-    
-       /* var newWidth = $('#resultsTable').width();
-        $('.ui-widget-header').css('width', newWidth );
-        $('.ui-resizable-handle').css('width', newWidth );*/
-
+        });
     }//END buildTable
 
     //hover over table row, go highlight region on map
     $(document).on('mouseenter', '#tableBody tr', function(e) {
-        
-       // $(this).addClass("hover");
         var category = e.currentTarget.cells[0].innerHTML //this.category;  //refers to the selected chart area
         var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
         var URL = app.map.getLayer('SparrowRanking').url;
@@ -2014,9 +1914,7 @@ require([
             graphicsQuery.where = fieldName + " = " + category; 
         } else{
             graphicsQuery.where = fieldName + "= '" + category + "'";
-        }
-
-        
+        }       
                                     
         queryTask.execute(graphicsQuery, responseHandler);
 
@@ -2034,13 +1932,7 @@ require([
             app.map.graphics.add(feature);
         }
     });
-    $(document).on('mouseleave', '#tableBody tr', function(e) {
-   //     $(this).removeClass("hover");
-    });
-    //}, function() {
-        //$(this).removeClass('hover');
- //   });
-    
+
     function showModal() {
         $('#geosearchModal').modal('show');
     }
@@ -2062,11 +1954,6 @@ require([
     $('#userGuideNav').click(function(){
         showUserGuideModal();
     });
-   /* function showTableModal () {
-        app.createTableQuery();
-        $('#tableModal').modal('show');
-    }
-    $('#tableButton').on('click', showTableModal);*/
 
     $('#html').niceScroll();
     $('#sidebar').niceScroll();
@@ -2077,11 +1964,7 @@ require([
     function showTableResizeable(){
         app.createTableQuery();
     }
-    function hideTableResizeable(){
-        $('#tableResizable').hide();
-    }
-    $('#tableButton').on('click', showTableResizeable);
-    $('#tableResizable_Close').on('click', hideTableResizeable);
+        
     $('#legendDiv').niceScroll();
 
     app.maxLegendHeight =  ($('#mapDiv').height()) * 0.90;
@@ -2096,8 +1979,7 @@ require([
 
     $('#legendCollapse').on('hide.bs.collapse', function () {
         $('#legendElement').css('height', 'initial');
-    });
-    
+    });    
 
     require([
         'dijit/form/CheckBox'
@@ -2140,7 +2022,6 @@ require([
             } 
             //click listener for regular
             button.click(function(e) {
-
                 //toggle checkmark
                 $(this).find('i.glyphspan').toggleClass('fa-check-square-o fa-square-o');
                 $(this).find('button').button('toggle');
@@ -2156,10 +2037,7 @@ require([
                 } else {
                     layer.setVisibility(true);
                 }
-
-            });
-            
-            
+            });            
 
             //group heading logic
             if (showGroupHeading) {
@@ -2213,52 +2091,51 @@ require([
                 //begin zoomto logic (in progress)
                 $(".zoomto").hover(function (event) {
 
-                $(".zoomDialog").remove();
-                //var layerToChange = this.id.replace("zoom", "");
-                var zoomDialogMarkup = $('<div class="zoomDialog"><label class="zoomClose pull-right">X</label><br><div class="list-group"><a href="#" id="zoomscale" class="list-group-item lgi-zoom zoomscale">Zoom to scale</a> <a id="zoomcenter" href="#" class="list-group-item lgi-zoom zoomcenter">Zoom to center</a><a id="zoomextent" href="#" class="list-group-item lgi-zoom zoomextent">Zoom to extent</a></div></div>');
-                $("body").append(zoomDialogMarkup);
-
-                $(".zoomDialog").css('left', event.clientX - 80);
-                $(".zoomDialog").css('top', event.clientY - 5);
-
-                $(".zoomDialog").mouseleave(function () {
                     $(".zoomDialog").remove();
-                });
+                    //var layerToChange = this.id.replace("zoom", "");
+                    var zoomDialogMarkup = $('<div class="zoomDialog"><label class="zoomClose pull-right">X</label><br><div class="list-group"><a href="#" id="zoomscale" class="list-group-item lgi-zoom zoomscale">Zoom to scale</a> <a id="zoomcenter" href="#" class="list-group-item lgi-zoom zoomcenter">Zoom to center</a><a id="zoomextent" href="#" class="list-group-item lgi-zoom zoomextent">Zoom to extent</a></div></div>');
+                    $("body").append(zoomDialogMarkup);
 
-                $(".zoomClose").click(function () {
-                    $(".zoomDialog").remove();
-                });
+                    $(".zoomDialog").css('left', event.clientX - 80);
+                    $(".zoomDialog").css('top', event.clientY - 5);
 
-                $('#zoomscale').click(function (e, layerToChange) {
-                    //logic to zoom to layer scale
-                    var layerMinScale = app.map.getLayer("SparrowRanking").minScale;
-                    if (layerMinScale > 0 ){app.map.setScale(layerMinScale);} else {console.log("No minimum scale for layer.")};
-                });
-
-                $("#zoomcenter").click(function (e, layerToChange) {
-                    //logic to zoom to layer center
-                    var layerCenter = app.map.getLayer("SparrowRanking").fullExtent.getCenter();
-                    //app.map.centerAt(layerCenter);
-                    //var dataCenter = new Point(layerCenter, new SpatialReference({wkid: 4326}));
-                    var dataCenter = new Point(layerCenter.x, layerCenter.y, new SpatialReference({wkid: 4326}));
-                    app.map.centerAt(dataCenter);
-                });
-
-                if ( $("#zoomextent") ){
-                    $("#zoomextent").click(function (e, layerToChange) {
-                        //logic to zoom to layer extent
-                        var layerExtent = app.map.getLayer("SparrowRanking").fullExtent;
-                        var extentProjectParams = new ProjectParameters();
-                        extentProjectParams.outSR = new SpatialReference(102100);
-                        extentProjectParams.geometries = [layerExtent];
-                        geomService.project(extentProjectParams, function (projectedExtentObj) {
-                            var projectedExtent = projectedExtentObj[0];
-                            map.setExtent(projectedExtent, new SpatialReference({wkid: 102100}));
-                        });
+                    $(".zoomDialog").mouseleave(function () {
+                        $(".zoomDialog").remove();
                     });
-                }
-                    
-            });
+
+                    $(".zoomClose").click(function () {
+                        $(".zoomDialog").remove();
+                    });
+
+                    $('#zoomscale').click(function (e, layerToChange) {
+                        //logic to zoom to layer scale
+                        var layerMinScale = app.map.getLayer("SparrowRanking").minScale;
+                        if (layerMinScale > 0 ){app.map.setScale(layerMinScale);} else {console.log("No minimum scale for layer.")};
+                    });
+
+                    $("#zoomcenter").click(function (e, layerToChange) {
+                        //logic to zoom to layer center
+                        var layerCenter = app.map.getLayer("SparrowRanking").fullExtent.getCenter();
+                        //app.map.centerAt(layerCenter);
+                        //var dataCenter = new Point(layerCenter, new SpatialReference({wkid: 4326}));
+                        var dataCenter = new Point(layerCenter.x, layerCenter.y, new SpatialReference({wkid: 4326}));
+                        app.map.centerAt(dataCenter);
+                    });
+
+                    if ( $("#zoomextent") ){
+                        $("#zoomextent").click(function (e, layerToChange) {
+                            //logic to zoom to layer extent
+                            var layerExtent = app.map.getLayer("SparrowRanking").fullExtent;
+                            var extentProjectParams = new ProjectParameters();
+                            extentProjectParams.outSR = new SpatialReference(102100);
+                            extentProjectParams.geometries = [layerExtent];
+                            geomService.project(extentProjectParams, function (projectedExtentObj) {
+                                var projectedExtent = projectedExtentObj[0];
+                                map.setExtent(projectedExtent, new SpatialReference({wkid: 102100}));
+                            });
+                        });
+                    }                    
+                });
                 //end zoomto logic
             }
         }

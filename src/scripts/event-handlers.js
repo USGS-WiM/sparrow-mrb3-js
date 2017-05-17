@@ -13,18 +13,10 @@ function loadEventHandlers() {
         if( $("#chartWindowDiv").css("visibility") == "visible" ) {
             app.createChartQuery();
         }
-        //if table is visible, refresh contents to match radio option chosen
-        if ($('#tableResizable').is(":visible")){
-            app.createTableQuery();
-        }
+        
     });
     /*END RADIO EVENTS*/
-
-    /* EXPORT TABLE EVENT*/
-    $('#exportTableButton').on('click', function(){
-        $("#resultsTable").tableToCSV();  //https://github.com/cyriac/jquery.tabletoCSV
-    });
-
+    
     //UPDATE: important! make sure the file name is updated_____________________________________________________
     $("#phosphorusDownload").click(function() {
         // hope the server sets Content-Disposition: attachment!
@@ -47,26 +39,10 @@ function loadEventHandlers() {
     //set initial Displayed Metric options
     $('#groupResultsSelect').on('loaded.bs.select', function(){  
         populateMetricOptions($("#groupResultsSelect")[0].selectedIndex);
-
-        if ( $("#groupResultsSelect")[0].selectedIndex == 0 ) {
-            $("#tableButton").show();
-        } else{
-            $("#tableButton").hide();
-
-        }
-        
-         //JUST A TEST FOR DEBUGGING
-/*        var layerDefinitions = [];
-        layerDefinitions[0] = "ST = 'ND'";
-        layerDefinitions[1] = "GP1 = 'Lake Superior'";
-        app.map.getLayer('SparrowRanking').setLayerDefinitions(layerDefinitions);*/
-        
-
         generateRenderer();
     });
 
-    // selector for click individual polygons button and draw square around to select multiple polygons
-     
+    // selector for click individual polygons button and draw square around to select multiple polygons     
     var selectPolygons = $('#clickPolyButton');
     selectPolygons.click(function(){        
         if (app.clickSelectionActive) {
@@ -75,7 +51,6 @@ function loadEventHandlers() {
             selectPolygons.html('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Select');
             app.map.setMapCursor("auto");
             app.clickSelectionActive = false;
-            //showCustomChart.prop("disabled",false);
             $("#chartButton").prop("disabled",false);
         } else if (!app.clickSelectionActive) {
             $('#customSelect').append('<div id="shiftNote" style="padding-left: 1em;color: orangered;">Shift+Click to Deselect</div>');
@@ -86,24 +61,8 @@ function loadEventHandlers() {
             app.clickSelectionActive = true;
         }
     });
-     
-   /*commented out for now. not sure if we need draw
-    var drawPolygonSquare = $('#drawPolyButton');
-    drawPolygonSquare.click(function(){        
-        if (app.drawSelectionActive) {
-            drawPolygonSquare.removeClass("active");
-            drawPolygonSquare.html('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Draw');
-            app.map.setMapCursor("auto");
-            app.drawSelectionActive = false;
-        } else if (!app.drawSelectionActive) {
-            drawPolygonSquare.addClass("active");
-            drawPolygonSquare.html('<i class="glyphicon glyphicon-stop"></i>&nbsp;&nbsp;Stop drawing');
-            app.map.setMapCursor("crosshair");
-          //  clickRemoveSelectionActive = false;
-            app.drawSelectionActive = true;
-        }
-    });
-*/
+   
+/*  Cant find reference to this in html
     var showCustomChart = $('#customChartButton');
     showCustomChart.click(function() {
         app.formattedHighlightString = app.userSelectedDispFieldName + " IN (" + app.userSelectedShapes.join(",") + ")";
@@ -112,29 +71,20 @@ function loadEventHandlers() {
         app.createChartQuery(app.formattedHighlightString);
         app.userSelectedDispFieldName = "";
         app.userSelectedShapes = [];
-    });
+    }); */
 
    //keep Displayed Metric options in sync 
     $("#groupResultsSelect").on('changed.bs.select', function(e){ 
         app.clearFindGraphics(); 
-        if ( $("#groupResultsSelect")[0].selectedIndex == 0 ) {
-            $("#tableButton").show();
-        } else{
-            $("#tableButton").hide();
-            //and clear/hide table if there is one showing
-            $('#tableResizable').hide();
-        }
+       
         populateMetricOptions(e.currentTarget.selectedIndex);
         setAggregateGroup( e.currentTarget.selectedIndex, $(".radio input[type='radio']:checked")[0].id );
         generateRenderer();
 
-
         if( $("#chartWindowDiv").css("visibility") == "visible" ) {
             app.map.graphics.clear();
             app.createChartQuery();
-        }
-
-        
+        }        
     });
     /*END GROUP RESULTS (AGGREGATE LAYER) EVENTS */
     
@@ -158,18 +108,13 @@ function loadEventHandlers() {
             var layerArr = [];
             layerArr.push(sparrowId);
             app.map.getLayer('SparrowRanking').setVisibleLayers(layerArr);
-            app.map.getLayer('SparrowRanking').setDefaultLayerDefinitions(true); //don't refresh yet.
-            //app.map.getLayer('SparrowRanking').setDefaultLayerDefinitions();
-
-            
-        }else{
-            app.map.getLayer('SparrowRanking').setDefaultLayerDefinitions(true); //don't refresh yet.
-            //app.map.getLayer('SparrowRanking').setDefaultLayerDefinitions();
+            app.map.getLayer('SparrowRanking').setDefaultLayerDefinitions(true); //don't refresh yet.            
+        } else {
+            app.map.getLayer('SparrowRanking').setDefaultLayerDefinitions(true); //don't refresh yet.          
         }
 
         //reset the selects
         $('.aoiSelect').selectpicker('val', '');  // 'hack' because selectpicker('deselectAll') method only works when bootstrap-select is open.
-        //$('.aoiSelect').selectpicker('refresh'); //don't need refresh apparently
         populateMetricOptions($("#groupResultsSelect")[0].selectedIndex);
         //redraw the symbols
 
@@ -183,28 +128,20 @@ function loadEventHandlers() {
         if ($('#tableResizable').is(":visible")){
             app.createTableQuery();
         }
-
     });
     /*END CLEAR AOI BUTTON EVENT */
- 
 
-    /* ENABLE/DISABLE SHOW CHART BUTTON PROGRAMATICALLY */
-    /*$('.nonAOISelect').on('change', function(){
-        if ($('#groupResultsSelect')[0].selectedIndex == 0){
-            if ($('#displayedMetricSelect')[0].selectedIndex == 4 || $('#displayedMetricSelect')[0].selectedIndex == 5){
-                $("#chartButton").addClass('disabled');
-                $('#chartButton').attr('disabled','disabled');
-                //TODO:  ALSO MAKE SURE YOU REMOVE ANY CHART FROM THE VIEW (Lobipanel only, modal takes care of self.)
-            } else{
-                $("#chartButton").removeClass('disabled');
-                $("#chartButton").removeAttr('disabled');
-            }
-        } else {
-            $("#chartButton").removeClass('disabled');
-            $("#chartButton").removeAttr('disabled');
-        }
-    });*/
-
+    // called from within $('.nonAOISelect').on('change' function several times to append warning and clear contents of AOI when getting set to disabled
+    function clearAOIandAppendWarning(warningId, cantShow, fromHere, thisSelect, anAOI){
+        // 'grp2-warning', 'Tributary', 'HUC8', '#grp2-select option', 'AOI2');
+        $("#clear_btn").append("<a class='" + warningId + "' data-toggle='tooltip' data-placement='top' title='Cannot show " + cantShow + " Area of Interest while grouping by " + fromHere + ".'>"+
+                "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
+        //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
+        $(thisSelect + ' option').attr("selected",false);
+        app.clearOneLayerDefObj(anAOI); //clear out this one 
+        var newE2 = { currentTarget: {id: thisSelect, value: ""} }; //making an 'e' to pass along
+        AOIChange(newE2); //go through the aoichange event to do the rest
+    }
     /***TODO UPDATE IMPORTANT! -- THE CASES IN MRB3 ARE CORRECT, BUT THE LOGIC NEEDS TO BE REVISITED TO DETERMINE WHICH AOI COMBINATIONS NEED TO BE DISABLED****/
     $('.nonAOISelect').on('change', function(){
         //first clear all disabled's and warnings                
@@ -219,39 +156,17 @@ function loadEventHandlers() {
         $(".grp3-warning").remove();
         
         switch($('#groupResultsSelect')[0].selectedIndex) {
-            case 0: //Catchment               
-                //CHART button logic  commented out @ cooperator's request see github issue #82
-/*                if ($('#displayedMetricSelect')[0].selectedIndex == 4 || $('#displayedMetricSelect')[0].selectedIndex == 5){
-                    $("#chartButton").addClass('disabled');
-                    $('#chartButton').attr('disabled','disabled');
-                    //ALSO MAKE SURE YOU REMOVE ANY CHART FROM THE VIEW (Lobipanel only, modal takes care of self.)
-                    if( $("#chartWindowDiv").css("visibility") == "visible"){
-                        $("#chartWindowDiv").css("display", "none"); 
-                    }
-                } else{
-                    $("#chartButton").removeClass('disabled');
-                    $("#chartButton").removeAttr('disabled');
-                }*/
+            case 0: //Catchment
                 // all AOIs enabled
                 $('#grp1-select').selectpicker('refresh');
                 $('#grp2-select').selectpicker('refresh');
                 $('#grp3-select').selectpicker('refresh');
                 break;
-            case 1: //HUC8    
-                //CHART button logic no longer needed but keep in case cooperator wants to switch back to no ACC load/yield charts
-                /*$("#chartButton").removeClass('disabled');
-                $("#chartButton").removeAttr('disabled');*/
-                
+            case 1: //HUC8
                  /***AOI Logic (Disable Tributary(GP2) & clear value if any) ***/
                  //Tributary
                 if (app.getLayerDefObj().AOI2) {
-                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Tributary Area of Interest while grouping by HUC8.'>"+
-                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
-                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp2-select option').attr("selected",false);
-                    app.clearOneLayerDefObj("AOI2"); //clear out this one 
-                    var newE2 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE2); //go through the aoichange event to do the rest                    
+                    clearAOIandAppendWarning('grp2-warning', 'Tributary', 'HUC8', '#grp2-select', 'AOI2');                   
                 }
                 $("#grp2-select").attr('disabled', 'disabled'); //trib       
                 $("#grp2-select").addClass('disabled');
@@ -265,13 +180,7 @@ function loadEventHandlers() {
                 /***AOI logic (disable HUC8(GP3) & clear value if any) ***/
                 //huc8
                 if (app.getLayerDefObj().AOI3) {
-                    $("#clear_btn").append("<a class='grp3-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by Tributary.'>"+
-                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
-                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp3-select option').attr("selected",false);
-                    app.clearOneLayerDefObj("AOI3"); //clear out this one 
-                    var newE3 = { currentTarget:{id: 'grp3-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE3); //go through the aoichange event to do the rest                    
+                    clearAOIandAppendWarning('grp3-warning', 'HUC8', 'Tributary', '#grp3-select', 'AOI3');
                 }
                 //disable the HUC8 dropdown
                 $("#grp3-select").attr('disabled', 'disabled');//huc8
@@ -286,13 +195,7 @@ function loadEventHandlers() {
                 /*** AOI logic (disable Tributary(GP2)  AND HUC8(GP3) & clear values if any) ***/
                 //Tributary
                 if (app.getLayerDefObj().AOI2) {
-                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Tributary Area of Interest while grouping by Main River Basin.'>"+
-                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
-                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp2-select option').attr("selected",false);
-                    app.clearOneLayerDefObj("AOI2"); //clear out this one 
-                    var newE2 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE2); //go through the aoichange event to do the rest                    
+                    clearAOIandAppendWarning('grp2-warning', 'Tributary', 'Main River Basin', '#grp2-select', 'AOI2');
                 }
                 $("#grp2-select").attr('disabled', 'disabled'); //Tributary    
                 $("#grp2-select").addClass('disabled');
@@ -302,13 +205,7 @@ function loadEventHandlers() {
                 $('#grp1-select').selectpicker('refresh');
                 //huc8
                 if (app.getLayerDefObj().AOI3) {
-                    $("#clear_btn").append("<a class='grp3-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by Main River Basin.'>"+
-                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
-                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp3-select option').attr("selected",false);
-                    app.clearOneLayerDefObj("AOI3"); //clear out this one 
-                    var newE3 = { currentTarget:{id: 'grp3-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE3); //go through the aoichange event to do the rest                    
+                    clearAOIandAppendWarning('grp3-warning', 'HUC8', 'Main River Basin', '#grp3-select', 'AOI3');
                 }
                 $("#grp3-select").attr('disabled', 'disabled'); //huc8       
                 $("#grp3-select").addClass('disabled');
@@ -318,13 +215,7 @@ function loadEventHandlers() {
                 /***AOI logic (disable GP1(Main Riv. Basin) AND GP2(Trib.) AND GP3(HUC8) & clear values if any) ***/
                 //Main Riv Basin
                 if (app.getLayerDefObj().AOI1) {
-                    $("#clear_btn").append("<a class='grp1-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Main River Basin Area of Interest while grouping by State.'>"+
-                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
-                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp1-select option').attr("selected",false);
-                    app.clearOneLayerDefObj("AOI1"); //clear out this one 
-                    var newE1 = { currentTarget:{id: 'grp1-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE1); //go through the aoichange event to do the rest                    
+                    clearAOIandAppendWarning('grp1-warning', 'Main River Basin', 'State', '#grp1-select', 'AOI1');
                 }
                 $("#grp1-select").attr('disabled', 'disabled'); //independent watersheds     
                 $("#grp1-select").addClass('disabled');
@@ -332,26 +223,14 @@ function loadEventHandlers() {
                 
                 //Tributary
                 if (app.getLayerDefObj().AOI2) {
-                    $("#clear_btn").append("<a class='grp2-warning' data-toggle='tooltip' data-placement='top' title='Cannot show Tributary Area of Interest while grouping by State.'>"+
-                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
-                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp2-select option').attr("selected",false);
-                    app.clearOneLayerDefObj("AOI2"); //clear out this one 
-                    var newE2 = { currentTarget:{id: 'grp2-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE2); //go through the aoichange event to do the rest                    
+                    clearAOIandAppendWarning('grp2-warning', 'Tributary', 'State', '#grp2-select', 'AOI2');
                 }
                 $("#grp2-select").attr('disabled', 'disabled'); //huc8       
                 $("#grp2-select").addClass('disabled');
                 $('#grp2-select').selectpicker('refresh');
 
-                if (app.getLayerDefObj().AOI3) {
-                    $("#clear_btn").append("<a class='grp3-warning' data-toggle='tooltip' data-placement='top' title='Cannot show HUC8 Area of Interest while grouping by State.'>"+
-                        "<span class='glyphicon glyphicon-warning-sign'></span></a>");   
-                    //has value, so unselect it, clear the app's LayerDefObj of this property & trigger AOIChange event
-                    $('#grp3-select option').attr("selected",false);
-                    app.clearOneLayerDefObj("AOI3"); //clear out this one 
-                    var newE3 = { currentTarget:{id: 'grp3-select', value: ""} }; //making an 'e' to pass along
-                    AOIChange(newE3); //go through the aoichange event to do the rest                    
+                if (app.getLayerDefObj().AOI3) {                    
+                    clearAOIandAppendWarning('grp3-warning', 'HUC8', 'State', '#grp3-select', 'AOI3');
                 }
                 $("#grp3-select").attr('disabled', 'disabled'); //huc8       
                 $("#grp3-select").addClass('disabled');
@@ -389,7 +268,6 @@ function loadEventHandlers() {
             $('#legendElement').css('height', 'initial');
         }
     });
-
 
     //displays map scale on map load
     app.map.on('load', function (){
@@ -432,11 +310,8 @@ function loadEventHandlers() {
         if (app.map.getLayer("SparrowRanking").layerDefinitions){
             app.identifyParams.layerDefinitions = app.map.getLayer("SparrowRanking").layerDefinitions;
         }
-        app.executeIdentifyTask(evt);
-        
-    });
-
-    
+        app.executeIdentifyTask(evt);        
+    });    
 
     //on clicks to swap basemap.app.map.removeLayer is required for nat'l map b/c it is not technically a basemap, but a tiled layer.
     $("#btnStreets").on('click', function () {
@@ -471,18 +346,4 @@ function loadEventHandlers() {
         app.map.setBasemap('topo');
         app.map.removeLayer(nationalMapBasemap);
     });
-/*    $('#btnNatlMap').on('click', function () {
-        app.map.addLayer(nationalMapBasemap);
-    });*/
-
-
-
-    // on(geocoder.inputNode, 'keydown', function (e) {
-    //     if (e.keyCode == 13) {
-    //         setSearchExtent();
-    //     }
-    // });
-
-    // Geosearch functions
-  //  $('#btnGeosearch').on ('click', geosearch);
 }
