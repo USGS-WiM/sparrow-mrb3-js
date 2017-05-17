@@ -952,7 +952,7 @@ function generateRenderer(){
         classDef.breakCount = 5;
 
         //classDef.baseSymbol = sfs;
-        classDef.baseSymbol = new SimpleFillSymbol("solid", null, null);
+       // classDef.baseSymbol = new SimpleFillSymbol("solid", null, null);
         /*classDef.baseSymbol = new SimpleFillSymbol({
           color: [ 51,51, 204, 0.9 ],
           style: "solid",
@@ -962,10 +962,10 @@ function generateRenderer(){
           }
         });*/
 
-        /*classDef.baseSymbol = new SimpleFillSymbol("solid",
+        classDef.baseSymbol = new SimpleFillSymbol("solid",
                 new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
                 new Color([168,168,168, 0.1]))
-                );*/
+                );
         
           
 
