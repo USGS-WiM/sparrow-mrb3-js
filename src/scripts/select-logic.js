@@ -942,34 +942,20 @@ function generateRenderer(){
         //var selectedMetric = "ST_AL";
         app.outFields = [selectedMetric];
         app.currentAttribute = selectedMetric; 
-        /*var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-            new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
-            new Color([255,0,0]), 2),new Color([255,255,0,0.25])
-          );*/
-
         var classDef = new ClassBreaksDefinition();
         classDef.classificationField = app.currentAttribute;
         classDef.classificationMethod = "quantile";
         classDef.breakCount = 5;
 
-        //classDef.baseSymbol = sfs;
-       // classDef.baseSymbol = new SimpleFillSymbol("solid", null, null);
-        /*classDef.baseSymbol = new SimpleFillSymbol({
-          color: [ 51,51, 204, 0.9 ],
-          style: "solid",
-          outline: {  // autocasts as esri/symbols/SimpleLineSymbol
-            color: "white",
-            width: 1
-          }
-        });*/
 
-        classDef.baseSymbol = new SimpleFillSymbol("solid",
+        classDef.baseSymbol = new SimpleFillSymbol("solid", null, null);
+        //not sure about this one, needs a little work to get the borders right.
+        /*classDef.baseSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
                 new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
                 new Color([168,168,168, 0.1]))
                 );
-        
+        */
           
-
         var colorRamp = new AlgorithmicColorRamp();
         //different ramps for phos/nitro
         if( $(".radio input[type='radio']:checked")[0].id == "radio1" ){
@@ -991,16 +977,13 @@ function generateRenderer(){
         params.formatLabel = true;
         params.where = app.layerDef; 
         var generateRenderer = new GenerateRendererTask(app.Url);
-        console.log('execute Renderer w/ params:  ' + params);
         generateRenderer.execute(params, applyRenderer, errorHandler);
 
 
         function applyRenderer(renderer){
             var sparrowId = app.map.getLayer('SparrowRanking').visibleLayers[0];
-            //console.log('sparrowId: ', sparrowId);
-            
             var layer = app.map.getLayer('SparrowRanking');
-            //console.log('in applyRenderer() ', layer);
+
 
             // dynamic layer stuff
               var optionsArray = [];
@@ -1009,19 +992,8 @@ function generateRenderer(){
               // set the drawing options for the relevant layer
               // optionsArray index corresponds to layer index in the map service
               optionsArray[sparrowId] = drawingOptions;
-              console.log(optionsArray);
-
 
               layer.setLayerDrawingOptions(optionsArray);
-
-              //app.map.getLayer("SparrowRanking").refresh();
-             //app.map.getLayer("SparrowRanking").show();
-            
-
-
-              //ONLY USED IF refreshing layer here instead of at layerDef Settings
-              //setTimeout(app.map.getLayer("SparrowRanking").refresh(), 1000);
-              //app.map.getLayer("SparrowRanking").refresh();
 
               if (! app.hasOwnProperty("legend")){
                 createLegend();
@@ -1048,8 +1020,6 @@ function generateRenderer(){
                 }]
             }, dom.byId("legendDiv"));
             app.legend.startup();
-            
-             //app.map.getLayer("SparrowRanking").refresh();
             
         }
 
