@@ -1059,7 +1059,19 @@ require([
                 'width':xWidth, 'height': yHeight
             });
     }
-
+    function clone(obj) {
+        var copy;
+        if (obj instanceof Object) {
+            copy = {};
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) 
+                {
+                    copy[attr] = clone(obj[attr]);
+                }
+            }
+            return copy;
+        }
+    }
 
     function showChart(response){               
         var columnLabels = [];
@@ -1068,15 +1080,16 @@ require([
         var chartArr = [];
         var series = [];
         var featureSort = [];
-
-
+        var tableFeatures = [];       
 
         $.each(response.features, function(index, feature){
+            // first push these into a separate array for table to use
+            tableFeatures.push($.extend(true, {}, feature.attributes));
             /***this function removes any fields ending with "AREA" from the response.features Object. (i.e. DEMIAREA, DEMTAREA, GP1_AREA, etc.)  
             The chart was not built to accommodate the extra area fields, but they're necessary for display in the table.***/
             $.map(Object.keys(feature.attributes), function(val, i){
                 //find ANY INDEX that contains "AREA" in the key
-                if (val.indexOf("AREA") != 1){
+                if (val.indexOf("AREA") > -1){
                     delete feature.attributes[val];
                 }
             });
@@ -1094,6 +1107,7 @@ require([
                 }
             });
             obj.total = sum;
+            tableFeatures[index].total = sum;
             sum = 0;
         });
         featureSort.sort(function(a, b){
@@ -1134,11 +1148,13 @@ require([
         });
         
         // initial table for Table tab
-         tableArr = featureSort; 
+         tableArr = tableFeatures; // featureSort; 
          labelArr = [];
          $.each(chartLabelsArr, function(index, value){
             labelArr.push(value);
         });
+     //   labelArr.push("Area"); // for all but catchments
+        if (sparrowLayerId == 0 || sparrowLayerId == 8) labelArr[0] = "Name";
          buildTable(tableArr, labelArr);
 
         //removes 'group by' from labels  (MUST MATCH CATEGORIES)
@@ -1890,8 +1906,18 @@ require([
             else shortHeader = head;
             headerKeyArr.push(shortHeader);
         });        
-        headerKeyArr.push("Total");
-       
+        
+        // if not sparrowLayer 0 or 8, only add Area, else add other 2 DEM fields headers too
+        if (app.map.getLayer('SparrowRanking').visibleLayers[0] == 0 || app.map.getLayer('SparrowRanking').visibleLayers[0] == 8) {
+            //add Basin Area, Upstream Area, and Total
+            headerKeyArr.push("Basin Area");
+            headerKeyArr.push("Upstream Area");
+            headerKeyArr.push("Total");          
+        } else {
+            headerKeyArr.push("Area");
+            headerKeyArr.push("Total");
+        }
+
         var htmlHeaderArr =  [];
         htmlHeaderArr.push("<tr>");
         $.each(headerKeyArr, function(index, key){
@@ -1901,10 +1927,10 @@ require([
         });
         htmlHeaderArr.push("</tr>");
 
-        //headerHtmlStr = getTableFields(headerKeyArr, 0);
         $('#resultsTable').find( 'thead' ).html(htmlHeaderArr.join(''));
 
         var htmlArr =[];
+        
         $('#resultsTable').append('<tbody id="tableBody"></tbody>');
         $.each(response, function(rowIndex, feature) {
            // console.log('feature(outer)' + feature);
