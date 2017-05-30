@@ -849,6 +849,7 @@ function getExtraOutfields(outfieldsArr, sparrowLayerId){
             //finalChartArr.push("PNAME");
             finalChartArr.push("DEMIAREA");
             finalChartArr.push("DEMTAREA");
+            finalChartArr.push("MRB_ID"); // ADDED TMR
             
             break;
         case 1: case 9:

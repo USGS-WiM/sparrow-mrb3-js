@@ -826,7 +826,7 @@ require([
 
         //setup esri query
         var chartQuery = new esri.tasks.Query();
-        chartQuery.returnGeometry = true;
+        chartQuery.returnGeometry = false;
         chartQuery.outFields = getExtraOutfields(outfieldsArr, sparrowLayerId);
         chartQuery.where = whereClause;
 
@@ -1017,6 +1017,7 @@ require([
         var series = [];
         var featureSort = [];
         var tableFeatures = [];       
+        var mrbIDstorage = [];
 
         $.each(response.features, function(index, feature){
             // first push these into a separate array for table to use
@@ -1037,9 +1038,11 @@ require([
         var sum = 0;
         $.each(featureSort, function(index, obj){
             $.each(obj, function(i, attribute){
-                if(jQuery.type(attribute) !== 'string'){
+                if(jQuery.type(attribute) !== 'string' && i !== "MRB_ID"){ // TMR ADDED  && i !== "MRB_ID"
                     sum += attribute;
                 }
+                //for all MRB_IDs, put into array for later TMR ADDED 
+                if (i == "MRB_ID") mrbIDstorage.push(attribute); 
             });
             obj.total = sum;
             tableFeatures[index].total = sum;
@@ -1057,6 +1060,7 @@ require([
         });
 
         categories.pop();
+        categories.pop(); // TMR ADDED remove the MRB_ID too
 
 
         //create multidimensional array from query response
@@ -1099,10 +1103,14 @@ require([
         $.each(chartLabelsArr, function(index, value){
             series.push( {name: value});
         });  
-
+        /* ADDED TMR
+        if (sparrowLayerId == 0) {
+            series.push( { name: "MRB ID"});
+        }*/
 
         //chartArr is a multi-dimensional array.  Each item in chartArr is an array of series data.
         $.each(chartArr, function(index, value){
+
             series[index].data = chartArr[index];
         });
 
@@ -1353,6 +1361,7 @@ require([
             $('#chartWindowDiv').css('visibility', 'hidden');
             $('#chartWindowContainer').empty();
             $('#chartWindowPanelTitle').empty();
+            mrbIDstorage = []; // TMR ADDED
         });
 
         //need listener to resize chart
@@ -1435,9 +1444,15 @@ require([
                                             //find data inside max/min selected axes
                                             if ( point.x >= xAxis.min && point.x <= xAxis.max ) {
                                                 //check if point.category is already in the array, if not add it
-                                                if (categoryArr.indexOf(point.category) == -1){
-                                                    categoryArr.push(point.category);
+                                                // TMR ADDED
+                                                var thisCategory;
+                                                thisCategory = mrbIDstorage.length > 0 ? mrbIDstorage[point.x] : point.category;
+                                                if (categoryArr.indexOf(thisCategory) == -1){
+                                                    categoryArr.push(thisCategory);
                                                 }
+                                                /*if (categoryArr.indexOf(point.category) == -1){
+                                                    categoryArr.push(point.category);
+                                                }*/
                                             }
                                         });
                                     }); 
@@ -1461,7 +1476,8 @@ require([
                             if (e.resetSelection != true) {                                 
                                 var categoryStr = "";
                                 $.each(categoryArr, function(i, category){
-                                    categoryStr += "'" + category + "', "
+                                    categoryStr += fieldName == "MRB_ID" ?  + category + ", " : "'" + category + "', "; // TMR ADDED
+                                //    categoryStr += "'" + category + "', "
                                 });  
                                 var queryStr = categoryStr.slice(0, categoryStr.length - 2);                                
                                 graphicsQuery.where = fieldName + " IN (" + queryStr + ")";
@@ -1650,7 +1666,7 @@ require([
                                     }
 
                                     //get everything needed for the query
-                                    var category = this.category;  //refers to the selected chart area
+                                    var category = mrbIDstorage.length > 0 ? mrbIDstorage[this.x] : this.category;  //refers to the selected chart area
                                     var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
                                     var URL = app.map.getLayer('SparrowRanking').url;
                                     var fieldName = switchWhereField( $('#groupResultsSelect')[0].selectedIndex );
