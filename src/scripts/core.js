@@ -90,6 +90,7 @@ require([
     app.customChartClicked = false; // when custom chart button clicked, need to let the chart know to show 'Show Full Chart' button
     app.shiftKey = false; // store if they are selecting (click) or unselecting (shift+click)
     app.formattedHighlightString; // from custom defined chart click, store first view in case they zoom in and want to reset back to this
+  
 
     /* values come from config file */
     app.defaultMapCenter = mapCenter;
@@ -1017,7 +1018,7 @@ require([
         var series = [];
         var featureSort = [];
         var tableFeatures = [];       
-        var mrbIDstorage = [];
+      //  var mrbIDstorage = [];
 
         $.each(response.features, function(index, feature){
             // first push these into a separate array for table to use
@@ -1040,9 +1041,7 @@ require([
             $.each(obj, function(i, attribute){
                 if(jQuery.type(attribute) !== 'string' && i !== "MRB_ID"){ // TMR ADDED  && i !== "MRB_ID"
                     sum += attribute;
-                }
-                //for all MRB_IDs, put into array for later TMR ADDED 
-                if (i == "MRB_ID") mrbIDstorage.push(attribute); 
+                }               
             });
             obj.total = sum;
             tableFeatures[index].total = sum;
@@ -1060,21 +1059,31 @@ require([
         });
 
         categories.pop();
-        categories.pop(); // TMR ADDED remove the MRB_ID too
+   //     categories.pop(); // TMR ADDED remove the MRB_ID too
 
 
         //create multidimensional array from query response
         $.each(categories, function(index, value){  
             var data = [];
             $.each(featureSort, function(innerIndex, feature){
-                data.push( feature[value] );
+                if ($('#groupResultsSelect')[0].selectedIndex == 0) { //catchments only
+                    data.push( {y: feature[value], id: feature["MRB_ID"]}); // TMR ADDED
+                } else {
+                    data.push( feature[value] );
+                }
             });
             chartArr.push(data);
         });
-
+      
+        if ($('#groupResultsSelect')[0].selectedIndex == 0) {
+            chartArr.pop(); // remove the last array of MRB_IDs  // TMR ADDED
+        }
         //remove 1st field ('group by') from charting arrays
         categories.shift();
-        columnLabels = chartArr.shift(); //removes AND returns column labels ( chartArr[0] )
+        $.each(chartArr.shift(), function(key, value) {  // TMR ADDED
+            // check to see if catchments, this will be an object otherwise it will be array
+            value.y !== undefined ? columnLabels.push(value.y) : columnLabels.push(value);
+        }); //removes AND returns column labels ( chartArr[0] )
         //chartArr.pop();
 
 
@@ -1093,7 +1102,9 @@ require([
             labelArr.push(value);
         });
      //   labelArr.push("Area"); // for all but catchments
-        if (sparrowLayerId == 0 || sparrowLayerId == 8) labelArr[0] = "Name";
+        if ($('#groupResultsSelect')[0].selectedIndex == 0) {
+            labelArr[0] = "Name";
+        }
          buildTable(tableArr, labelArr);
 
         //removes 'group by' from labels  (MUST MATCH CATEGORIES)
@@ -1110,7 +1121,6 @@ require([
 
         //chartArr is a multi-dimensional array.  Each item in chartArr is an array of series data.
         $.each(chartArr, function(index, value){
-
             series[index].data = chartArr[index];
         });
 
@@ -1360,8 +1370,7 @@ require([
             app.formattedHighlightString = "";
             $('#chartWindowDiv').css('visibility', 'hidden');
             $('#chartWindowContainer').empty();
-            $('#chartWindowPanelTitle').empty();
-            mrbIDstorage = []; // TMR ADDED
+            $('#chartWindowPanelTitle').empty();           
         });
 
         //need listener to resize chart
@@ -1446,7 +1455,7 @@ require([
                                                 //check if point.category is already in the array, if not add it
                                                 // TMR ADDED
                                                 var thisCategory;
-                                                thisCategory = mrbIDstorage.length > 0 ? mrbIDstorage[point.x] : point.category;
+                                                thisCategory = $('#groupResultsSelect')[0].selectedIndex == 0 ? point.id : point.category; // TMR ADDED
                                                 if (categoryArr.indexOf(thisCategory) == -1){
                                                     categoryArr.push(thisCategory);
                                                 }
@@ -1666,7 +1675,7 @@ require([
                                     }
 
                                     //get everything needed for the query
-                                    var category = mrbIDstorage.length > 0 ? mrbIDstorage[this.x] : this.category;  //refers to the selected chart area
+                                    var category = $('#groupResultsSelect')[0].selectedIndex == 0 ? this.id : this.category;  //refers to the selected chart area
                                     var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
                                     var URL = app.map.getLayer('SparrowRanking').url;
                                     var fieldName = switchWhereField( $('#groupResultsSelect')[0].selectedIndex );
@@ -1734,15 +1743,20 @@ require([
                                                 return 'ST';
                                         }
                                     }
-
+                                
                                     var queryField = switchWhereField( $('#groupResultsSelect')[0].selectedIndex );
-                                    var queryString = queryField + " = " + "'" + this.category + "'";
-
+                                    var thisCategory;                                    
+                                    if ($('#groupResultsSelect')[0].selectedIndex == 0) {
+                                        thisCategory = this.id;
+                                    } else {
+                                        thisCategory = this.category;
+                                    }
+                                        
                                     if (queryField != "MRB_ID"){
-                                        var queryString = queryField + " = " + "'" + this.category + "'";
-                                    }else {
+                                        var queryString = queryField + " = " + "'" + thisCategory + "'";
+                                    } else {
                                         //MRB_ID field is NOT a string!!!
-                                        var queryString = queryField + " = " + this.category ;
+                                        var queryString = queryField + " = " + thisCategory ;
                                     }
 
                                     //clear any zoom graphics
@@ -1839,7 +1853,8 @@ require([
         });        
         
         // if not sparrowLayer 0 or 8, only add Area, else add other 2 DEM fields headers too
-        if (app.map.getLayer('SparrowRanking').visibleLayers[0] == 0 || app.map.getLayer('SparrowRanking').visibleLayers[0] == 8) {
+        var sparrowLayerId = app.map.getLayer('SparrowRanking').visibleLayers[0];
+        if (sparrowLayerId == 0 || sparrowLayerId == 8) {
             //add Basin Area, Upstream Area, and Total
             headerKeyArr.push("Basin Area");
             headerKeyArr.push("Upstream Area");
@@ -1864,11 +1879,13 @@ require([
         
         $('#resultsTable').append('<tbody id="tableBody"></tbody>');
         $.each(response, function(rowIndex, feature) {
-            var rowI = rowIndex;
+            var rowI = sparrowLayerId == 0 || sparrowLayerId == 8 ? feature["MRB_ID"] : rowIndex;
 
-            htmlArr.push("<tr id='row"+rowIndex+"'>");
+            htmlArr.push("<tr id='row"+rowI+"'>");
             $.each(feature, function(key, value){
-                htmlArr.push('<td>'+ value +'</td>'); 
+                if (key !== "MRB_ID") {
+                    htmlArr.push('<td>'+ value +'</td>'); 
+                }
             });
 
             htmlArr.push("</tr>");
@@ -1890,7 +1907,7 @@ require([
 
     //hover over table row, go highlight region on map
     $(document).on('mouseenter', '#tableBody tr', function(e) {
-        var category = e.currentTarget.cells[0].innerHTML //this.category;  //refers to the selected chart area
+        var category = $('#groupResultsSelect')[0].selectedIndex == 0 ? e.currentTarget.id.substring(3) : e.currentTarget.cells[0].innerHTML; //this.category;  //refers to the selected chart area
         var visibleLayers = app.map.getLayer('SparrowRanking').visibleLayers[0];
         var URL = app.map.getLayer('SparrowRanking').url;
         var fieldName = "";
