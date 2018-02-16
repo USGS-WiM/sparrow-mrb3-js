@@ -1,0 +1,46 @@
+[
+  {
+    "name": "sparrow-mrb3-js",
+    "organization": "U.S. Geological Survey",
+    "description": "Spatially-Referenced Regresson On Watershed Attributes (SPARROW) MRB3 in JavaScript,
+    "version": "v0.0.0",
+    "status": "Development"
+
+    "permissions": {
+      "usageType": "openSource",
+      "licenses": [
+        {
+          "name": "Public Domain",
+          "URL": "https://github.com/USGS-WiM/sparrow-mrb3-js/blob/master/LICENSE.md"
+        }
+      ]
+    },
+
+    "homepageURL": "https://sparrow.wim.usgs.gov/",
+    "downloadURL": "https://github.com/USGS-WiM/sparrow-mrb3-js/archive/master.zip",
+    "disclaimerURL": "https://github.com/USGS-WiM/sparrow-mrb3-js/blob/master/DISCLAIMER.md",
+    "repositoryUrl": "https://github.com/USGS-WiM/sparrow-mrb3-js",
+    "vcs": "git",
+
+    "laborHours": null,
+
+    "tags": [
+      "sparrow",
+      "mrb3",
+      "javascript"
+    ],
+
+    "languages": [
+      "javascript"
+    ],
+
+    "contact": {
+      "name": "Erik Smith",
+      "email": "easmith@usgs.gov"
+    },
+
+    "date": {
+      "metadataLastUpdated": "2018-02-16"
+    }
+  }
+]
