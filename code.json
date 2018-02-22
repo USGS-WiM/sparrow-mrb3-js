@@ -2,9 +2,9 @@
   {
     "name": "sparrow-mrb3-js",
     "organization": "U.S. Geological Survey",
-    "description": "Spatially-Referenced Regresson On Watershed Attributes (SPARROW) MRB3 in JavaScript,
+    "description": "Spatially-Referenced Regresson On Watershed Attributes (SPARROW) MRB3 in JavaScript",
     "version": "v0.0.0",
-    "status": "Development"
+    "status": "Development",
 
     "permissions": {
       "usageType": "openSource",
